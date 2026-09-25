@@ -1,0 +1,2 @@
+CONTAINER ID   IMAGE                                                COMMAND                  CREATED         STATUS                   PORTS                                                                                      NAMES
+33e87bf50dcd   container-registry.oracle.com/database/free:latest   "/bin/bash -c $SCRIP…"   3 minutes ago   Up 2 minutes (healthy)   0.0.0.0:1521->1521/tcp, [::]:1521->1521/tcp, 0.0.0.0:8181->8181/tcp, [::]:8181->8181/tcp   oralab-26ai
