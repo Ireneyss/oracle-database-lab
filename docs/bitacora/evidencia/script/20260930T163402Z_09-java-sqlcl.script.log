@@ -1,0 +1,8 @@
+== Java ==
+openjdk version "21.0.12.1" 2026-08-18
+
+== JAVA_HOME ==
+/usr/lib/jvm/java-21-openjdk-amd64
+
+== SQLcl ==
+SQLcl: Release 26.3.0.0 Production Build: 26.3.0.260.1620

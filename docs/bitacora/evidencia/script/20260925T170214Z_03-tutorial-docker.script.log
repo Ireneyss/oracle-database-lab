@@ -1,0 +1,168 @@
+Script started on 2026-09-25 19:02:14+02:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="120" LINES="30"]
+[?2004h]0;irene@Irene: ~/oracle-database-lab[01;32mirene@Irene[00m:[01;34m~/oracle-database-lab[00m$ [7mdocker info[27m
+[7mdocker pull alpine:3.20[27m
+[7mdocker images[27m
+[7mdocker volume create datos-prueba[27m
+[7mdocker volume ls[27m
+[7mdocker run -d --name web -p 8080:80 nginx:alpine[27m
+[7mdocker port web[27m
+[7mdocker stats --no-stream web[27m
+[7mdocker stop web[27m
+[7mdocker rm web[27m
+[7mdocker volume rm datos-prueba[27m[A[A[A[A[A[A[A[A[A[A]0;irene@Irene: ~/oracle-database-lab[01;32mirene@Irene[00m:[01;34m~/oracle-database-lab[00m$ docker info
+docker pull alpine:3.20
+docker images
+docker volume create datos-prueba
+docker volume ls
+docker run -d --name web -p 8080:80 nginx:alpine
+docker port web
+docker stats --no-stream web
+docker stop web
+docker rm web
+docker volume rm datos-prueba
+[?2004lClient:
+ Version:    29.8.0
+ Context:    default
+ Debug Mode: false
+ Plugins:
+  agent: Docker AI Agent Runner (Docker Inc.)
+    Version:  v1.140.0
+    Path:     /usr/local/lib/docker/cli-plugins/docker-agent
+  ai: Docker AI Agent - Ask Gordon (Docker Inc.)
+    Version:  v1.31.0
+    Path:     /usr/local/lib/docker/cli-plugins/docker-ai
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.37.1
+    Path:     /usr/local/lib/docker/cli-plugins/docker-buildx
+  compose: Docker Compose (Docker Inc.)
+    Version:  v5.5.1
+    Path:     /usr/local/lib/docker/cli-plugins/docker-compose
+  debug: Get a shell into any image or container (Docker Inc.)
+    Version:  0.0.47
+    Path:     /usr/local/lib/docker/cli-plugins/docker-debug
+  desktop: Docker Desktop commands (Docker Inc.)
+    Version:  v0.4.4
+    Path:     /usr/local/lib/docker/cli-plugins/docker-desktop
+  dhi: CLI for managing Docker Hardened Images (Docker Inc.)
+    Version:  v0.0.7
+    Path:     /usr/local/lib/docker/cli-plugins/docker-dhi
+  extension: Manages Docker extensions (Docker Inc.)
+    Version:  v0.2.31
+    Path:     /usr/local/lib/docker/cli-plugins/docker-extension
+  init: Creates Docker-related starter files for your project (Docker Inc.)
+    Version:  v1.4.0
+    Path:     /usr/local/lib/docker/cli-plugins/docker-init
+  mcp: Docker MCP Plugin (Docker Inc.)
+    Version:  v0.43.3
+    Path:     /usr/local/lib/docker/cli-plugins/docker-mcp
+  model: Docker Model Runner (Docker Inc.)
+    Version:  v1.2.6
+    Path:     /usr/local/lib/docker/cli-plugins/docker-model
+  offload: Docker Offload (Docker Inc.)
+    Version:  v0.6.27
+    Path:     /usr/local/lib/docker/cli-plugins/docker-offload
+  pass: Docker Pass Secrets Manager Plugin (beta) (Docker Inc.)
+    Version:  v0.2.2
+    Path:     /usr/local/lib/docker/cli-plugins/docker-pass
+  sandbox: "docker sandbox" is deprecated, use Docker Sandboxes instead (Docker Inc.)
+    Version:  v0.13.0
+    Path:     /usr/local/lib/docker/cli-plugins/docker-sandbox
+  scout: Docker Scout (Docker Inc.)
+    Version:  v1.24.0
+    Path:     /usr/local/lib/docker/cli-plugins/docker-scout
+
+Server:
+ Containers: 0
+  Running: 0
+  Paused: 0
+  Stopped: 0
+ Images: 1
+ Server Version: 29.8.0
+ Storage Driver: overlayfs
+  driver-type: io.containerd.snapshotter.v1
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 2
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+ CDI spec directories:
+  /etc/cdi
+  /var/run/cdi
+ Discovered Devices:
+  cdi: docker.com/gpu=webgpu
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 nvidia runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: 1294c24a7da8e5a793ed378161673abe94118892
+ runc version: v1.5.1-0-g8f2685a4
+ init version: de40ad0
+ Security Options:
+  seccomp
+   Profile: builtin
+  cgroupns
+ Kernel Version: 6.18.33.2-microsoft-standard-WSL2
+ Operating System: Docker Desktop
+ OSType: linux
+ Architecture: x86_64
+ CPUs: 16
+ Total Memory: 15.31GiB
+ Name: docker-desktop
+ ID: 3482cf9b-aa09-4254-bbb4-a3488e64ad39
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ HTTP Proxy: http.docker.internal:3128
+ HTTPS Proxy: http.docker.internal:3128
+ No Proxy: hubproxy.docker.internal
+ Labels:
+  com.docker.desktop.address=unix:///var/run/docker-cli.sock
+ Experimental: false
+ Insecure Registries:
+  hubproxy.docker.internal:5555
+  ::1/128
+  127.0.0.0/8
+ Live Restore Enabled: false
+ Firewall Backend: iptables
+
+3.20: Pulling from library/alpine
+
+[1A[2K25f1d6b1951a: Pulling fs layer [1B
+[1A[2K3a030ca3f633: Download complete [1B
+[1A[2Kd4050d56ebf2: Download complete [1B[3A[2K25f1d6b1951a: Downloading [==============>                                    ]  1.049MB/3.63MB[3B[3A[2K25f1d6b1951a: Downloading [===========================================>       ]  3.146MB/3.63MB[3B[3A[2K25f1d6b1951a: Download complete [3B[3A[2K25f1d6b1951a: Extracting 1 s[3B[3A[2K25f1d6b1951a: Pull complete [3BDigest: sha256:d9e853e87e55526f6b2917df91a2115c36dd7c696a35be12163d44e6e2a4b6bc
+Status: Downloaded newer image for alpine:3.20
+docker.io/library/alpine:3.20
+                                                                                                    [1m[106m[30mi[0m[0m [96mInfo → [0m[0m [38;5;0m[48;5;14m U [0m In Use
+[39m[1mIMAGE[0m                [39m[1mID[0m             [39m[1mDISK USAGE[0m   [39m[1mCONTENT SIZE[0m   [39m[1mEXTRA[0m
+[34m[1malpine:3.20[0m          [39md9e853e87e55[0m       [39m12.2MB[0m         [39m3.71MB[0m        
+[34m[1mhello-world:latest[0m   [39m5e2309035332[0m       [39m25.9kB[0m         [39m9.49kB[0m        
+datos-prueba
+DRIVER    VOLUME NAME
+local     datos-prueba
+Unable to find image 'nginx:alpine' locally
+alpine: Pulling from library/nginx
+
+[1A[2Ke72112c14215: Pulling fs layer [1B
+[1A[2Kd9aae54b5831: Pulling fs layer [1B
+[1A[2K6c53d0b2a666: Pulling fs layer [1B
+[1A[2K9a9a644fdd6a: Pulling fs layer [1B
+[1A[2K745dfb2690dd: Pulling fs layer [1B
+[1A[2Ke76228b47809: Pulling fs layer [1B
+[1A[2Ke2de96513ba9: Pulling fs layer [1B
+[1A[2K64c8194480fe: Pulling fs layer [1B[1A[2K64c8194480fe: Download complete [1B[7A[2Kd9aae54b5831: Downloading [===========================>                       ]  1.049MB/1.931MB[7B[7A[2Kd9aae54b5831: Download complete [7B[5A[2K9a9a644fdd6a: Download complete [5B[8A[2Ke72112c14215: Downloading [=====>                                             ]  2.097MB/20.53MB[8B[4A[2K745dfb2690dd: Download complete [4B[8A[2Ke72112c14215: Downloading [==========>                                        ]  4.194MB/20.53MB[8B[3A[2Ke76228b47809: Download complete [3B[8A[2Ke72112c14215: Downloading [===============>                                   ]  6.291MB/20.53MB[8B[6A[2K6c53d0b2a666: Download complete [6B[8A[2Ke72112c14215: Downloading [====================>                              ]  8.389MB/20.53MB[8B[8A[2Ke72112c14215: Downloading [======================>                            ]  9.437MB/20.53MB[8B[8A[2Ke72112c14215: Downloading [============================>                      ]  11.53MB/20.53MB[8B[2A[2Ke2de96513ba9: Downloading [=============>                                     ]  1.049MB/3.85MB[2B[8A[2Ke72112c14215: Downloading [==============================>                    ]  12.58MB/20.53MB[8B[2A[2Ke2de96513ba9: Downloading [===========================>                       ]  2.097MB/3.85MB[2B[2A[2Ke2de96513ba9: Download complete [2B[8A[2Ke72112c14215: Downloading [===================================>               ]  14.68MB/20.53MB[8B[2A[2Ke2de96513ba9: Extracting 1 s[2B[8A[2Ke72112c14215: Downloading [======================================>            ]  15.73MB/20.53MB[8B[2A[2Ke2de96513ba9: Extracting 1 s[2B[8A[2Ke72112c14215: Downloading [========================================>          ]  16.78MB/20.53MB[8B[7A[2Kd9aae54b5831: Pull complete [7B[2A[2Ke2de96513ba9: Pull complete [2B[8A[2Ke72112c14215: Downloading [=============================================>     ]  18.87MB/20.53MB[8B[1A[2K64c8194480fe: Pull complete [1B[5A[2K9a9a644fdd6a: Pull complete [5B[4A[2K745dfb2690dd: Pull complete [4B[6A[2K6c53d0b2a666: Pull complete [6B[8A[2Ke72112c14215: Downloading [================================================>  ]  19.92MB/20.53MB[8B
+[1A[2K0deea27e58d9: Download complete [1B
+[1A[2Kd54d3939625e: Download complete [1B[5A[2Ke76228b47809: Pull complete [5B[10A[2Ke72112c14215: Download complete [10B[10A[2Ke72112c14215: Extracting 1 s[10B[10A[2Ke72112c14215: Extracting 1 s[10B[10A[2Ke72112c14215: Extracting 1 s[10B[10A[2Ke72112c14215: Extracting 1 s[10B[10A[2Ke72112c14215: Pull complete [10BDigest: sha256:1ed1b0e1d7652937d6cbdaf4018c7b6fc009a7dd6c3047351e2eddda745de43f
+Status: Downloaded newer image for nginx:alpine
+7a230ef35c16b03738737f41829b0c0fdd853db2b0276c8abf4dd5e2775a6734
+80/tcp -> 0.0.0.0:8080
+80/tcp -> [::]:8080
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT     MEM %     NET I/O      BLOCK I/O     PIDS
+7a230ef35c16   web       0.00%     15.39MiB / 15.31GiB   0.10%     690B / 84B   0B / 8.19kB   17
+web
+web
+datos-prueba
+[?2004h]0;irene@Irene: ~/oracle-database-lab[01;32mirene@Irene[00m:[01;34m~/oracle-database-lab[00m$ [7mexit[27mexit
+[?2004lexit
+
+Script done on 2026-09-25 19:05:12+02:00 [COMMAND_EXIT_CODE="0"]
