@@ -1,0 +1,4 @@
+
+   [1mCON_ID[m    [1mFORCE_MATCHING_SIGNATURE[m    [1mCURSORES[m    [1mEJECUCIONES[m [1mEJEMPLO[m                                                                                              
+_________ ___________________________ ___________ ______________ ____________________________________________________________________________________________________ 
+        3         1863221789280198928         377            377 SELECT /* lab4_literal */ COUNT(*) FROM admin_academia.aca_estudiantes WHERE estudiante_id = 1000    
