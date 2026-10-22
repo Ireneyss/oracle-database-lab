@@ -1,0 +1,28 @@
+
+System altered.
+
+
+NAME		       VALUE
+---------------------- ----------------------------------------
+db_create_file_dest    /opt/oracle/oradata
+
+1 row selected.
+
+
+Session altered.
+
+
+Tablespace created.
+
+
+TABLESPACE_NAME 	       FILE_NAME
+------------------------------ ------------------------------------------------------------------------------------------
+PRUEBA_OMF		       /opt/oracle/oradata/FREE/55E54F210F100828E0630B00580ADFD0/datafile/o1_mf_prueba_o_ofnho254
+			       _.dbf
+
+
+1 row selected.
+
+
+Tablespace dropped.
+
