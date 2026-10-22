@@ -1,0 +1,26 @@
+== Contenido real de $ORACLE_HOME/dbs (enlace al volumen) ==
+total 180740
+-rw-r----- 1 oracle oinstall 68800512 Sep 30 16:40 arch1_1_1237845575.dbf
+-rw-r----- 1 oracle oinstall 59646464 Oct 22 16:11 arch1_2_1237845575.dbf
+-rw-r----- 1 oracle oinstall 18907136 Sep 30 16:50 c-1509902213-20260930-00
+-rw-r----- 1 oracle oinstall 18907136 Oct 22 16:57 c-1509902213-20261022-00
+-rw-rw---- 1 oracle oinstall     1544 Oct 22 16:59 hc_FREE.dat
+-rw-r----- 1 oracle oinstall     3079 May 14  2015 init.ora
+-rw-r----- 1 oracle oinstall       24 Jul  5 21:57 lkFREE
+-rw-r----- 1 oracle oinstall     2048 Oct 22 16:34 orapwFREE
+-rw-r----- 1 oracle oinstall 18792448 Oct 22 16:57 snapcf_FREE.f
+-rw-r----- 1 oracle oinstall     3584 Oct 22 17:01 spfileFREE.ora
+== Redo archivados (la base está en ARCHIVELOG) ==
+
+NAME												   MB CUANDO
+------------------------------------------------------------------------------------------ ---------- ----------------
+/opt/oracle/product/26ai/dbhomeFree/dbs/arch1_1_1237845575.dbf					   66 2026-09-30 16:40
+/opt/oracle/product/26ai/dbhomeFree/dbs/arch1_2_1237845575.dbf					   57 2026-10-22 16:11
+
+DEST_NAME
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+DESTINATION
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+LOG_ARCHIVE_DEST_1
+/opt/oracle/product/26ai/dbhomeFree/dbs/arch
+
