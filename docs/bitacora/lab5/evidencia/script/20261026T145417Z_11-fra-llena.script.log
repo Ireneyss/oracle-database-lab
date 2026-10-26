@@ -1,0 +1,45 @@
+
+===== 1. Espacio de la FRA ahora =====
+
+NAME				LIMITE_MB   USADO_MB
+------------------------------ ---------- ----------
+/opt/oracle/oradata/fra 	     4096	   0
+
+===== 2. Encoger la FRA por debajo de lo necesario (solo laboratorio) =====
+
+===== 3. Generar redo (UPDATE sin cambio real de 20 000 filas) y pedir que se archive =====
+ALTER SYSTEM ARCHIVE LOG CURRENT
+*
+ERROR at line 1:
+ORA-16038: log 2 sequence# 17 cannot be archived
+ORA-19809: limit exceeded for recovery files
+ORA-00312: online log 2 thread 1: '/opt/oracle/oradata/FREE/redo02.log'
+ORA-00312: online log 2 thread 1: '/opt/oracle/oradata/FREE/redo02b.log'
+Help: https://docs.oracle.com/error-help/db/ora-16038/
+
+
+
+===== 4. Lo que verá el DBA de guardia: grupos sin archivar y el alert log =====
+
+    GROUP#  SEQUENCE# ARC STATUS
+---------- ---------- --- ----------------
+	 1	   16 YES ACTIVE
+	 2	   17 NO  ACTIVE
+	 3	   18 NO  CURRENT
+
+HORA	 MESSAGE_TEXT
+-------- ----------------------------------------------------------------------------------------------------
+14:54:17 ORA-19815: WARNING: db_recovery_file_dest_size of 2097152 bytes is 100.00% used, and has 0 remaining
+14:54:17 ORA-19809: limit exceeded for recovery files
+
+===== 5. Solución inmediata: devolver espacio a la FRA. ARCn reintenta solo =====
+
+    GROUP#  SEQUENCE# ARC STATUS
+---------- ---------- --- ----------------
+	 1	   19 NO  CURRENT
+	 2	   17 YES ACTIVE
+	 3	   18 YES ACTIVE
+
+NAME				LIMITE_MB   USADO_MB
+------------------------------ ---------- ----------
+/opt/oracle/oradata/fra 	     4096	 8.1
