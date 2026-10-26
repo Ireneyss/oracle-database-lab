@@ -1,0 +1,36 @@
+===== 0. Los datos: cómo se guardan teléfono y apellidos =====
+
+TELEFONO	APELLIDOS
+--------------- --------------------------------------------------------------------------------
+661452937	P??rez Castro
+656862585	Garc??a Cort??s
+688358983	Garc??a Lozano
+
+UPPER_APELLIDOS_GIL
+-------------------
+		  0
+
+PRIMER_APELLIDO_GIL
+-------------------
+		  0
+
+TELEFONO_600
+------------
+	 981
+===== 1. Índices temporales para la prueba (no existen en el banco) =====
+===== 2. Antes y después =====
+PR original		       filas=	 981  lecturas l??gicas=   1487  f??sicas=    0     18.5 ms
+plan: TABLE ACCESS FULL CLIENTE
+PR reescrita OR 	       filas=	 981  lecturas l??gicas=    722  f??sicas=    0      3.7 ms
+plan: TABLE ACCESS BY INDEX ROWID BATCHED CLIENTE > BITMAP CONVERSION TO ROWIDS > BITMAP OR > BITMAP CONVERSION FROM ROWIDS > SORT ORDER BY > INDEX RANGE SCAN
+IX_REV_APELLIDOS > BITMAP CONVERSION FROM ROWIDS > SORT ORDER BY > INDEX RANGE SCAN IX_REV_TELEFONO
+PR reescrita UNION	       filas=	 981  lecturas l??gicas=    986  f??sicas=    0      2.8 ms
+plan: HASH UNIQUE > UNION-ALL > TABLE ACCESS BY INDEX ROWID BATCHED CLIENTE > INDEX RANGE SCAN IX_REV_TELEFONO > TABLE ACCESS BY INDEX ROWID BATCHED CLIENTE > INDEX RANGE
+SCAN IX_REV_APELLIDOS
+PR solo telefono	       filas=	 981  lecturas l??gicas=    984  f??sicas=    0      4.4 ms
+plan: TABLE ACCESS BY INDEX ROWID BATCHED CLIENTE > INDEX RANGE SCAN IX_REV_TELEFONO
+===== 3. Limpieza =====
+
+INDICES_TIENDASUR
+-----------------
+		7
