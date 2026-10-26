@@ -1,0 +1,31 @@
+===== Reto B: bfr medido bloque a bloque (DBMS_ROWID) frente a NUM_ROWS / BLOCKS =====
+
+TABLA  BLOQUES_CON_FILAS  MIN_FILAS MEDIA_FILAS  MAX_FILAS
+------ ----------------- ---------- ----------- ----------
+PEDIDO		    5220	  2	  191.6        200
+
+TABLA	BLOQUES_CON_FILAS  MIN_FILAS MEDIA_FILAS  MAX_FILAS
+------- ----------------- ---------- ----------- ----------
+CLIENTE 	     1477	  22	    67.7	 71
+
+TABLE_NAME															   NUM_ROWS	BLOCKS BFR_ESTADISTICAS
+-------------------------------------------------------------------------------------------------------------------------------- ---------- ---------- ----------------
+  PCT_FREE AVG_ROW_LEN
+---------- -----------
+CLIENTE 															     100000	  1517		   65.9
+	10	   102
+
+PEDIDO																    1000000	  5320		    188
+	10	    32
+
+===== Reparto: cuántos bloques de PEDIDO tienen cada número de filas =====
+
+FILAS_EN_BLOQUE    BLOQUES
+--------------- ----------
+	      2 	 1
+	    191       2301
+	    192       2867
+	    196 	 7
+	    197 	43
+	    200 	 1
+===== PCTFREE y longitud real de fila de PEDIDO =====
