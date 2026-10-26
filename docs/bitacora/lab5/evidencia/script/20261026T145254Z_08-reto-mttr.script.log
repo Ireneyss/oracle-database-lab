@@ -1,0 +1,26 @@
+===== Antes: checkpoint completo para partir de cero redo pendiente =====
+
+MOMENTO 			   ESTIMATED_MTTR ACTUAL_REDO_BLKS TARGET_REDO_BLKS RECOVERY_ESTIMATED_IOS
+---------------------------------- -------------- ---------------- ---------------- ----------------------
+tras ALTER SYSTEM CHECKPOINT		       33		 6	     663552			 3
+===== Carga: UPDATE de 20 000 filas + COMMIT, sin checkpoint =====
+
+MOMENTO 			   ESTIMATED_MTTR ACTUAL_REDO_BLKS TARGET_REDO_BLKS RECOVERY_ESTIMATED_IOS
+---------------------------------- -------------- ---------------- ---------------- ----------------------
+tras UPDATE 20 000 + COMMIT		       33	     13067	     663552		       526
+===== Otra vez la misma carga =====
+
+MOMENTO 			   ESTIMATED_MTTR ACTUAL_REDO_BLKS TARGET_REDO_BLKS RECOVERY_ESTIMATED_IOS
+---------------------------------- -------------- ---------------- ---------------- ----------------------
+tras el segundo UPDATE + COMMIT 	       33	     16741	     663552		       638
+
+NAME
+--------------------------------------------------------------------------------
+VALUE
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+log_checkpoint_timeout
+1800
+
+fast_start_mttr_target
+0
+
