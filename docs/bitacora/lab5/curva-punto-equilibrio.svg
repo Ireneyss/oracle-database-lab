@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="460" viewBox="0 0 760 460" font-family="sans-serif" font-size="12">
+<rect width="760" height="460" fill="white"/>
+<text x="380" y="22" text-anchor="middle" font-size="15">Punto de equilibrio en TIENDASUR.PEDIDO (lecturas lógicas, escala log-log)</text>
+<line x1="80.0" y1="40" x2="80.0" y2="380" stroke="#ddd"/>
+<text x="80.0" y="398" text-anchor="middle">0.01 %</text>
+<line x1="235.0" y1="40" x2="235.0" y2="380" stroke="#ddd"/>
+<text x="235.0" y="398" text-anchor="middle">0.1 %</text>
+<line x1="390.0" y1="40" x2="390.0" y2="380" stroke="#ddd"/>
+<text x="390.0" y="398" text-anchor="middle">1 %</text>
+<line x1="545.0" y1="40" x2="545.0" y2="380" stroke="#ddd"/>
+<text x="545.0" y="398" text-anchor="middle">10 %</text>
+<line x1="700.0" y1="40" x2="700.0" y2="380" stroke="#ddd"/>
+<text x="700.0" y="398" text-anchor="middle">100 %</text>
+<line x1="80" y1="380.0" x2="700" y2="380.0" stroke="#ddd"/>
+<text x="74" y="384.0" text-anchor="end">1e0</text>
+<line x1="80" y1="331.4" x2="700" y2="331.4" stroke="#ddd"/>
+<text x="74" y="335.4" text-anchor="end">1e1</text>
+<line x1="80" y1="282.9" x2="700" y2="282.9" stroke="#ddd"/>
+<text x="74" y="286.9" text-anchor="end">1e2</text>
+<line x1="80" y1="234.3" x2="700" y2="234.3" stroke="#ddd"/>
+<text x="74" y="238.3" text-anchor="end">1e3</text>
+<line x1="80" y1="185.7" x2="700" y2="185.7" stroke="#ddd"/>
+<text x="74" y="189.7" text-anchor="end">1e4</text>
+<line x1="80" y1="137.1" x2="700" y2="137.1" stroke="#ddd"/>
+<text x="74" y="141.1" text-anchor="end">1e5</text>
+<line x1="80" y1="88.6" x2="700" y2="88.6" stroke="#ddd"/>
+<text x="74" y="92.6" text-anchor="end">1e6</text>
+<line x1="80" y1="40.0" x2="700" y2="40.0" stroke="#ddd"/>
+<text x="74" y="44.0" text-anchor="end">1e7</text>
+<text x="380" y="420" text-anchor="middle">k = porcentaje de filas pedidas</text>
+<text x="20" y="210" transform="rotate(-90 20 210)" text-anchor="middle">lecturas lógicas</text>
+<rect x="80" y="40" width="178.3" height="340" fill="#e8f0ff"/>
+<text x="86" y="56" fill="#3060c0">el optimizador elige el índice (CF malo)</text>
+<polyline fill="none" stroke="#222" stroke-width="2" points="80.0,199.4 188.3,199.4 235.0,199.4 281.7,199.4 343.3,199.4 390.0,199.4 436.7,199.4 498.3,199.4 545.0,199.4 591.7,199.4 653.3,199.4 700.0,199.4 "/>
+<line x1="440" y1="318" x2="465" y2="318" stroke="#222" stroke-width="3"/><text x="470" y="322">tabla entera (recorrido completo)</text>
+<polyline fill="none" stroke="#2a9d4b" stroke-width="2" points="80.0,350.8 188.3,339.0 235.0,329.4 281.7,317.9 343.3,301.2 390.0,287.6 436.7,273.1 498.3,253.9 545.0,239.3 591.7,224.7 653.3,205.4 700.0,190.8 "/>
+<line x1="440" y1="336" x2="465" y2="336" stroke="#2a9d4b" stroke-width="3"/><text x="470" y="340">índice CF bueno (IX_PED_FECHA)</text>
+<polyline fill="none" stroke="#d1495b" stroke-width="2" points="80.0,280.7 188.3,249.9 235.0,234.8 281.7,219.6 343.3,200.9 390.0,185.9 436.7,171.1 498.3,151.7 545.0,137.1 591.7,122.5 653.3,103.2 700.0,88.5 "/>
+<line x1="440" y1="354" x2="465" y2="354" stroke="#d1495b" stroke-width="3"/><text x="470" y="358">índice CF malo (IX_PED_CLIENTE)</text>
+<circle cx="348.0" cy="199.4" r="5" fill="#d1495b"/>
+<text x="356.0" y="189.4" fill="#d1495b" text-anchor="start">cruce ~0.54 %</text>
+<circle cx="672.5" cy="199.4" r="5" fill="#2a9d4b"/>
+<text x="664.5" y="189.4" fill="#2a9d4b" text-anchor="end">cruce ~66 %</text>
+</svg>
