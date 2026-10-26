@@ -1,0 +1,103 @@
+ALTER SYSTEM: Flushing buffer cache inst=0 container=4099 global
+2026-10-26T15:02:08.238246+00:00
+Errors in file /opt/oracle/diag/rdbms/free/FREE/trace/FREE_ckpt_91.trc:
+ORA-63999: data file suffered media failure
+ORA-01116: error in opening database file 16
+ORA-01110: data file 16: '/opt/oracle/oradata/FREE/FREEPDB1/academia01.dbf'
+ORA-27041: unable to open file
+Linux-x86_64 Error: 2: No such file or directory
+Additional information: 3
+2026-10-26T15:02:08.253724+00:00
+FREEPDB1(3):JIT: pid 58 requesting stop
+2026-10-26T15:02:08.259527+00:00
+Errors in file /opt/oracle/diag/rdbms/free/FREE/trace/FREE_mz00_616.trc:
+ORA-01110: data file 16: '/opt/oracle/oradata/FREE/FREEPDB1/academia01.dbf'
+ORA-01565: Error identifying file /opt/oracle/oradata/FREE/FREEPDB1/academia01.dbf.
+ORA-27037: unable to obtain file status
+Linux-x86_64 Error: 2: No such file or directory
+Additional information: 7
+FREEPDB1(3):Buffer Cache invalidation for PDB 3 started
+FREEPDB1(3):Buffer Cache invalidation for PDB 3 completed
+Checker run found 1 new persistent data failures
+FREEPDB1(3):*** 2026-10-26T15:02:08.437448+00:00
+While transitioning the pdb 3 to clean state, clearing all its abort bits in the control file.
+Completed: Pluggable database FREEPDB1 closed services=None
+2026-10-26T15:02:13.533398+00:00
+Restore from backup piece /opt/oracle/oradata/fra/FREE/55E54F210F100828E0630B00580ADFD0/backupset/2026_10_26/o1_mf_nnndf_LAB5_SIMULACRO_D_ofytvdnc_.bkp
+FREEPDB1(3):Full restore complete of  datafile 16 /opt/oracle/oradata/FREE/FREEPDB1/academia01.dbf.  Elapsed time: 0:00:00
+FREEPDB1(3):   checkpoint is SCN 6218425 time 10/26/2026 15:02:04 on PDB incarnation 0
+FREEPDB1(3):2084884
+2026-10-26T15:02:14.982868+00:00
+alter database recover datafile list clear
+Completed: alter database recover datafile list clear
+alter database recover datafile list
+ 16
+Completed: alter database recover datafile list
+ 16
+alter database recover
+ if needed start partial
+2026-10-26T15:02:15.008669+00:00
+Media Recovery Start
+2026-10-26T15:02:15.008963+00:00
+Serial Media Recovery started
+Recovery start scn 6218425, time 10/26/2026 15:02:04
+*** 2026-10-26T15:02:15.097161+00:00
+Recovery of Online Redo Log: Thread 1 Group 1 Seq 22 Reading mem 0
+  Mem# 0: /opt/oracle/oradata/FREE/redo01.log
+  Mem# 1: /opt/oracle/oradata/FREE/redo01b.log
+*** 2026-10-26T15:02:15.137920+00:00
+Recovery of Online Redo Log: Thread 1 Group 2 Seq 23 Reading mem 0
+  Mem# 0: /opt/oracle/oradata/FREE/redo02.log
+  Mem# 1: /opt/oracle/oradata/FREE/redo02b.log
+.... (PID:670): Media Recovery Complete [dbsdrv.c:15840]
+Completed: alter database recover
+ if needed start partial
+2026-10-26T15:02:15.632658+00:00
+FREEPDB1(3):ALTER DATABASE DATAFILE 16 ONLINE
+FREEPDB1(3):Completed: ALTER DATABASE DATAFILE 16 ONLINE
+2026-10-26T15:02:15.990197+00:00
+ALTER PLUGGABLE DATABASE FREEPDB1 OPEN
+FREEPDB1(3):Autotune of undo retention is turned on. 
+2026-10-26T15:02:16.121523+00:00
+FREEPDB1(3):Errors in file /opt/oracle/diag/rdbms/free/FREE/trace/FREE_ora_694.trc:
+ORA-01113: file 26 needs media recovery
+ORA-01110: data file 26: '/opt/oracle/oradata/FREE/FREEPDB1/tiendasur01.dbf'
+2026-10-26T15:02:16.121676+00:00
+Errors in file /opt/oracle/diag/rdbms/free/FREE/trace/FREE_ora_694.trc:
+ORA-01113: file 26 needs media recovery
+ORA-01110: data file 26: '/opt/oracle/oradata/FREE/FREEPDB1/tiendasur01.dbf'
+2026-10-26T15:02:16.125753+00:00
+FREEPDB1(3):JIT: pid 694 requesting stop
+FREEPDB1(3):Media Recovery Start
+2026-10-26T15:02:16.251496+00:00
+FREEPDB1(3):Serial Media Recovery started
+FREEPDB1(3):WARNING! Recovering data file 26 from a fuzzy backup. It might be an online
+FREEPDB1(3):backup taken without entering the begin backup command.
+FREEPDB1(3):WARNING! Recovering data file 20 from a fuzzy backup. It might be an online
+FREEPDB1(3):backup taken without entering the begin backup command.
+FREEPDB1(3):WARNING! Recovering data file 19 from a fuzzy backup. It might be an online
+FREEPDB1(3):backup taken without entering the begin backup command.
+FREEPDB1(3):WARNING! Recovering data file 18 from a fuzzy backup. It might be an online
+FREEPDB1(3):backup taken without entering the begin backup command.
+FREEPDB1(3):WARNING! Recovering data file 17 from a fuzzy backup. It might be an online
+FREEPDB1(3):backup taken without entering the begin backup command.
+FREEPDB1(3):WARNING! Recovering data file 15 from a fuzzy backup. It might be an online
+FREEPDB1(3):backup taken without entering the begin backup command.
+FREEPDB1(3):WARNING! Recovering data file 14 from a fuzzy backup. It might be an online
+FREEPDB1(3):backup taken without entering the begin backup command.
+FREEPDB1(3):WARNING! Recovering data file 13 from a fuzzy backup. It might be an online
+FREEPDB1(3):backup taken without entering the begin backup command.
+FREEPDB1(3):WARNING! Recovering data file 12 from a fuzzy backup. It might be an online
+FREEPDB1(3):backup taken without entering the begin backup command.
+FREEPDB1(3):Recovery start scn 6218458, time 10/26/2026 15:02:07
+FREEPDB1(3):*** 2026-10-26T15:02:16.373399+00:00
+FREEPDB1(3):Recovery of Online Redo Log: Thread 1 Group 2 Seq 23 Reading mem 0
+FREEPDB1(3):  Mem# 0: /opt/oracle/oradata/FREE/redo02.log
+FREEPDB1(3):  Mem# 1: /opt/oracle/oradata/FREE/redo02b.log
+FREEPDB1(3):.... (PID:694): Media Recovery Complete [dbsdrv.c:15840]
+FREEPDB1(3):Autotune of undo retention is turned on. 
+2026-10-26T15:02:17.162763+00:00
+FREEPDB1(3):Opening pdb with Resource Manager plan: DEFAULT_PLAN
+2026-10-26T15:02:17.289569+00:00
+Completed: Pluggable database FREEPDB1 opened read write 
+Completed: ALTER PLUGGABLE DATABASE FREEPDB1 OPEN

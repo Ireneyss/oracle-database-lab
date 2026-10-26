@@ -1,0 +1,18 @@
+===== 1. Q9 hoy (IX_PED_FECHA) =====
+Q9 actual		       filas=	  20  lecturas l??gicas=      5  f??sicas=    0       .6 ms
+plan: COUNT STOPKEY > VIEW > TABLE ACCESS BY INDEX ROWID PEDIDO > INDEX FULL SCAN DESCENDING IX_PED_FECHA
+===== 2. Q9 con un índice cubriente de prueba (fecha + todas las columnas) =====
+Q9 cubriente		       filas=	  20  lecturas l??gicas=      3  f??sicas=    0       .2 ms
+plan: COUNT STOPKEY > VIEW > INDEX FULL SCAN DESCENDING IX_RETO_Q9_CUB
+===== 3. Lo que ocuparía frente a la tabla =====
+
+INDEX_NAME		       MB
+---------------------- ----------
+IX_RETO_Q9_CUB		       49
+PEDIDO			       42
+IX_PED_FECHA		       22
+===== 4. Limpieza =====
+
+INDICES_TIENDASUR
+-----------------
+		7

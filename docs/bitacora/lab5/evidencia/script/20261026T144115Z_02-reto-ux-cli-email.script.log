@@ -1,0 +1,25 @@
+===== 1. Predicción a mano (30 bytes por entrada de hoja, fo máximo de IX_PED_CLIENTE = 543) =====
+entradas por hoja = floor(7996 x 0,9 / 30) = 239 -> hojas = ceil(100000/239) = 419
+altura = 1 + ceil(log_543(419)) = 2
+===== 2. Medida: ANALYZE INDEX ... VALIDATE STRUCTURE e INDEX_STATS =====
+
+NAME																     HEIGHT    LF_ROWS	  LF_BLKS
+-------------------------------------------------------------------------------------------------------------------------------- ---------- ---------- ----------
+   BR_ROWS    BR_BLKS BYTES_ENTRADA_HOJA BYTES_ENTRADA_RAMA   PCT_USED DEL_LF_ROWS
+---------- ---------- ------------------ ------------------ ---------- -----------
+UX_CLI_EMAIL																  3	100000	      501
+       500	    3		    35.9	       18.2	    90		 0
+
+
+CALCULO
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+fo real = (hojas + ramas - 1) / ramas = 168 | fo m??ximo = 8028 / bytes por entrada de rama = 442 | entradas por hoja = 200
+===== 3. El mismo análisis para PK_CLIENTE (mismas 100 000 entradas, clave creciente) =====
+
+NAME																     HEIGHT    LF_ROWS	  LF_BLKS
+-------------------------------------------------------------------------------------------------------------------------------- ---------- ---------- ----------
+   BR_ROWS    BR_BLKS BYTES_ENTRADA_HOJA BYTES_ENTRADA_RAMA   PCT_USED DEL_LF_ROWS
+---------- ---------- ------------------ ------------------ ---------- -----------
+PK_CLIENTE																  2	100000	      187
+       186	    1		    14.9	       10.9	   100		 0
+
