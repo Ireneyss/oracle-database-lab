@@ -138,7 +138,52 @@ Copia en frío completa: datafiles 3954 MB + control files 36 MB + redo online 6
 - Fecha de registro de la fila 101 (columna 6, `78 7e 0a 16 11 33 19 …`): siglo 120 − 100 = 20, año 126 − 100 = 26, mes 10, día 22, hora 17 − 1 = 16, minuto 51 − 1 = 50, segundo 25 − 1 = 24 → **2026-10-22 16:50:24 UTC**, el momento en que apliqué V002. Los 4 bytes restantes son la fracción de segundo.
 - **Un UPDATE de la fila 101** necesita una ranura de la ITL para su transacción. Al visitar el bloque, Oracle ve que la transacción de la ranura 0x01 (`Lck 90`) ya está confirmada y hace la limpieza diferida: pone a 0 su `Lck` y los bytes de bloqueo de esas filas. Después la nueva transacción ocupa una ranura (la 0x02, libre, o la 0x01 ya reutilizable) y solo la fila 101 queda bloqueada por ella (`Lck 1`). Se puede comprobar repitiendo el volcado del bloque tras un UPDATE sin confirmar.
 
-**Reto — abrir otro bloque.** PENDIENTE.
+**Reto — abrir otro bloque** (`scripts/lab4/12-reto-otro-bloque.sql`, `script/…_12-reto-otro-bloque.script.log` y traza `config/…_12-reto-volcado-bloque.trc.txt`).
+Elegí el estudiante **19500** (ROWID `AAAR2kAAAAAAASVABN`): mismo objeto 73124 y archivo 16, **bloque 1173**, fila 77.
+
+| Campo | Bloque 783 (estudiante 101) | Bloque 1173 (estudiante 19500) |
+| --- | --- | --- |
+| `nrow` | 90 | 85 |
+| `fsbo` | 0xc6 (198) | 0xbc (188) |
+| `fseo` | 0x427 (1063) | 0x3f6 (1014) |
+| `avsp` = `tosp` | 0x361 (865) | 0x33a (826) = 1014 − 188 |
+| ITL 0x01 | `--U-`, `Lck 90` | `--U-`, `Lck 85` |
+| `tl` de la fila | 78 | 84 |
+
+`fsbo` es 10 bytes menor porque hay 5 filas menos y cada una ocupa 2 bytes en el directorio de filas. Caben menos filas porque las de este bloque son más largas (84 bytes: el DNI, el nombre y el correo de un ID de 5 cifras tienen más caracteres) y el bloque se llena antes. **Sí se ve la limpieza diferida**: la ranura 0x01 sigue con `Lck 85` y flag `--U-`, es decir, la transacción de V002 confirmó pero nadie ha vuelto a modificar el bloque para limpiar los bytes de bloqueo.
+
+### Parte L
+
+**Punto de control** (`script/20261026T142902Z_13-capacidad.script.log`).
+- Estadísticas de ACA_ESTUDIANTES: r = 20 000, R = 76 bytes, PCTFREE 10, **244 bloques** bajo la HWM y 256 asignados.
+- Filas por bloque medidas con `DBMS_ROWID`: 231 bloques con filas, de 68 a 95 filas, media **86,6**.
+- Fórmula de la Unidad 3: bfr = ⌊(8192 − 96) · 0,9 / 76⌋ = 95 → b = ⌈20 000 / 95⌉ = **211**. Versión Oracle (cabecera 122 y 2 bytes de directorio por fila): bfr 93 → 216.
+- Coste medido: lectura lógica **2,6 µs** (400 000 lecturas, 4 por búsqueda, 1040 ms de CPU); física aleatoria **7,5 µs** (5464 lecturas en 41,2 ms); secuencial 4595 bloques en 53 peticiones (~87 bloques por petición) en **45,5 ms**, Bw = 790 MB/s.
+- En mi equipo el cociente c_sec / c_aleat sale **1,319** (en el enunciado, 0,762): el bloque secuencial (9,9 µs) me salió más caro que el aleatorio (7,5 µs). Es el efecto de la caché de páginas de Linux: la "lectura física aleatoria" casi nunca va al disco. Con ese cociente, el umbral es (1/86) · 1,319 = **1,53 %** de las filas.
+
+**Reto — dimensiona ACA_MATRICULAS** (`scripts/lab4/13-reto-matriculas.sql`, `script/…_13-reto-matriculas.script.log`).
+- Predicción: R = 30 bytes, PCTFREE 10 → bfr = ⌊8096 · 0,9 / 30⌋ = 242 → b = ⌈60 000 / 242⌉ = **248 bloques**.
+- Realidad: **370 bloques** bajo la HWM (384 asignados). Con `DBMS_ROWID`: 301 bloques con filas, de 159 a 210, media **199,3** filas por bloque.
+- La diferencia tiene dos causas. (1) **Sobrecarga por fila**: en una fila tan corta, los 3 bytes de cabecera, los 5 bytes de longitud (uno por columna) y los 2 del directorio pesan mucho. Con unos 36 bytes reales por fila, ⌊(8192 − 122) · 0,9 / 36⌋ = 201, que coincide con los 199 medidos. En ACA_ESTUDIANTES (filas de 76 bytes) esa sobrecarga se notaba menos. (2) **Bloques sin filas bajo la HWM**: `DBMS_SPACE` da 300 FULL + 1 FS2 + 7 FS4 + **62 sin formatear** = 370. ASSM formatea bloques por lotes, y la HWM sube antes de llenarlos.
+- Recorrido completo en un HDD a 150 MB/s: 370 · 8192 B / 150 MB/s ≈ **19 ms**. La tabla es pequeña: lo caro en HDD sería leerla por índice con filas desordenadas, no entera.
+
+### Parte M
+
+**Punto de control** (`script/20261026T142921Z_14-filas-migradas.script.log`).
+- MIGRA con PCTFREE 0: 5000 filas en 13 bloques y `CHAIN_CNT` 0. Tras hacer crecer 1 de cada 5 filas a 300 bytes: 58 bloques y **`CHAIN_CNT` 1000 (20 %)**, exactamente las filas con ID múltiplo de 5.
+- `LIST CHAINED ROWS` guarda las 1000 filas. La primera es el ID 2935, ROWID `AAAR/3AAAAAABYLAAC` (archivo 25, bloque 5643, ranura 2).
+- En el volcado del bloque 5643, la ranura 2 tiene `tl: 9 fb: --H----- … cc: 0` y `nrid: 0x00001626.25a`. Queda solo la cabeza, sin las piezas F ni L. En BIGFILE, la parte anterior al punto es el bloque: 0x1626 = **5670**, y 0x25a = 602 es la ranura nueva.
+- ANCHA: la fila de unos 12 000 bytes da `CHAIN_CNT` 1 (encadenada) y la fila "corta" no.
+- Tras `MOVE PCTFREE 20`, PK_MIGRA queda `UNUSABLE` y vuelve a `VALID` con `REBUILD`. Resultado: `CHAIN_CNT` 0 en 63 bloques.
+
+### Parte N
+
+**Autopsia** (`spool/20261026T143015Z_15-autopsia-instancia.spool.log`) e informe en `docs/bitacora/lab4-autopsia.md`. Lo que más llama la atención de mi entorno:
+- Solo hay 3 errores ORA- en 24 h: `ORA-00800` ×2, ruido del contenedor al arrancar, y `ORA-959` ×1, provocado por `DROP TABLESPACE IF EXISTS tbs_lab4` en la Parte L. El enunciado mostraba 17 porque allí se había hecho la Parte I ese mismo día.
+- El arranque de hoy (14:27:48 UTC) hizo **recuperación de instancia** (`Beginning crash recovery of 1 threads`, 0,27 MB de redo aplicados). El contenedor estaba `Exited (255)` porque se cerró Docker Desktop con la base abierta: fue, sin querer, un `SHUTDOWN ABORT`. No se perdió nada.
+- `FORCE_LOGGING = YES` y ARCHIVELOG **sin FRA**: los archivados van a `$ORACLE_HOME/dbs/arch` (3 archivos, 228 MB).
+
+**Verificación final** (`script/20261026T143226Z_16-verificacion-final.script.log`): **TODO OK**, 0 fallos.
 
 ---
 
@@ -207,8 +252,98 @@ Copia en frío completa: datafiles 3954 MB + control files 36 MB + redo online 6
 
 **28.** `tl: 78` = 3 bytes de cabecera de fila (flag, byte de bloqueo y número de columnas, `cc: 7`) + 7 bytes de longitud (uno por columna, todas de menos de 250 bytes) + 68 bytes de datos (3 + 9 + 9 + 11 + 19 + 6 + 11). 3 + 7 + 68 = 78. Los 68 coinciden con `BYTES_DE_DATOS_FILA_101`.
 
+**29.** Fórmula de la Unidad 3 con mis estadísticas (r = 20 000, R = 76, PCTFREE 10): bfr = ⌊(8192 − 96) · 0,9 / 76⌋ = ⌊95,9⌋ = **95** filas por bloque, y b = ⌈20 000 / 95⌉ = **211** bloques (`script/20261026T142902Z_13-capacidad.script.log`, sección 3). La tabla tiene **244** porque la fórmula simplifica tres cosas:
+- Cada fila ocupa algo más que `AVG_ROW_LEN`: 2 bytes del directorio de filas, y la cabecera del bloque es de 122 bytes con 2 ranuras ITL. Con eso salen 93 filas y 216 bloques.
+- Las filas reales varían. La sección 2 cuenta de 68 a 95 filas por bloque, con media 86,6, en 231 bloques.
+- Bajo la HWM hay 13 bloques casi vacíos: 230 FULL + 1 FS2 + 13 FS4 = 244 (Parte K). Además hay 256 bloques asignados, porque el espacio se reserva por extensiones.
+
+**30.** Con mis cifras (sección 5):
+- **Lectura lógica:** 1040 ms de CPU / 400 000 lecturas = **2,6 µs**. Cada búsqueda hace 4: raíz, rama, hoja y tabla.
+- **Física aleatoria:** 41,2 ms / 5464 lecturas = **7,5 µs**.
+- **Bloque secuencial:** 45,5 ms / 4595 bloques = **9,9 µs** por bloque, a 87 bloques por petición (790 MB/s).
+
+En mi equipo la lectura secuencial por bloque salió más cara que la aleatoria (cociente 1,319). Eso solo pasa porque las dos se sirven desde la RAM de Linux (pregunta 32).
+
+**31.** HDD con Bw = 150 MB/s y lat = 5 ms:
+- c_sec por bloque = 8192 B / (150 · 1 048 576 B/s) ≈ **52 µs**.
+- c_sec / c_aleat = 52 µs / 5000 µs ≈ **0,0104**.
+- Umbral = (1/86) · 0,0104 ≈ 0,000121 → **0,012 %** de las filas, unas 48 de las 400 000 de LECTURAS.
+
+Por encima de eso gana el recorrido completo: 4595 bloques en secuencial son unos 0,24 s, y los mismos 4595 bloques uno a uno son 23 s. En mi contenedor el umbral era del 1,53 %: la misma fórmula da una decisión distinta con otro hardware.
+
+**32.** Porque `ALTER SYSTEM FLUSH BUFFER_CACHE` vacía la caché de Oracle, pero no la caché de páginas de Linux. Casi todas las "lecturas físicas" se sirven desde la RAM del sistema operativo y no desde el disco: 7,5 µs, cuando un SSD tarda unos 100 µs y un HDD unos 5 ms. La media de `db file sequential read` desde el arranque (269 µs, sección 6) es mayor porque incluye las lecturas en frío tras arrancar. **No invalida el método**: medir lógicas, físicas y tiempos y aplicar la fórmula es igual en producción; lo que cambia son las cifras que se introducen.
+
+**33.**
+
+| | Migración | Encadenamiento |
+| --- | --- | --- |
+| Causa | Un UPDATE agranda una fila que ya no cabe en su bloque (en mi prueba, de 1 a 300 bytes con PCTFREE 0) | La fila mide más que un bloque (mi fila de unos 12 000 bytes en bloques de 8 KB) |
+| Qué queda | La cabeza en el bloque original con `fb: --H-----` y `nrid` (dirección nueva) | La primera pieza enlazada con las siguientes |
+| Detección | `ANALYZE … COMPUTE STATISTICS` → `CHAIN_CNT` (1000, 20 %); `LIST CHAINED ROWS`; estadística `table fetch continued row` | Igual (`CHAIN_CNT` 1 en ANCHA) |
+| Cura | `ALTER TABLE … MOVE (ONLINE)` con PCTFREE adecuado: `CHAIN_CNT` volvió a 0 | No tiene cura reorganizando: bloque mayor (16/32 KB) o rediseño (LOB, tabla aparte) |
+
+**34.** Una búsqueda normal por clave en MIGRA cuesta 3 lecturas lógicas: dos niveles de índice y el bloque de la tabla. Las 200 búsquedas que caen en filas migradas (IDs múltiplo de 5 entre 1 y 1000) necesitan una más para seguir el `nrid`, así que cuestan 4. (800 · 3 + 200 · 4) / 1000 = 3200 / 1000 = **3,2**. Coincide con lo medido: `table fetch continued row` = 200 y 3200 lecturas lógicas (sección 4).
+
+**35.** Porque `MOVE` reescribe las filas en bloques nuevos, cambia el ROWID de todas y el índice sigue apuntando a los ROWID viejos. Oracle lo marca `UNUSABLE`: PK_MIGRA salió `UNUSABLE` y volvió a `VALID` tras `ALTER INDEX … REBUILD`. En producción usaría `ALTER TABLE … MOVE ONLINE`, que mantiene los índices válidos y no bloquea el DML, en una ventana de baja carga, con espacio para la copia y recogiendo estadísticas al terminar.
+
+**36.** Tres hallazgos de mi autopsia (detalle en `docs/bitacora/lab4-autopsia.md`):
+1. **ARCHIVELOG sin FRA** (`db_recovery_file_dest_size = 0`, archivados en `$ORACLE_HOME/dbs/arch`, 228 MB). Riesgo: crecen sin límite ni alerta y, si se llena el disco, la base se para. Acción: FRA de 4 GB y retención con RMAN. Prioridad **alta**.
+2. **Redo con un solo miembro por grupo** (3 grupos de 200 MB, `members = 1`). Riesgo: si se corrompe el miembro CURRENT, se pierden transacciones confirmadas. Acción: segundo miembro por grupo, en otro disco en producción. Prioridad **alta**.
+3. **Parada no controlada**: recuperación de instancia en el arranque de hoy, 0,27 MB de redo, con el contenedor en `Exited (255)`. Riesgo: cada apagado de Docker Desktop es un `SHUTDOWN ABORT`; hoy no se perdió nada, pero se depende siempre de la recuperación. Acción: `docker stop` (que hace un cierre limpio) antes de apagar el equipo. Prioridad **media**.
+
+**37.** Por mínimo privilegio. SYSTEM tiene el rol DBA: un error en una consulta de observación, o una contraseña filtrada, podría modificar o borrar cualquier cosa. C##OPS_RO solo tiene `CREATE SESSION`, `SELECT_CATALOG_ROLE`, `CONTAINER_DATA = ALL` y el `SELECT` puntual sobre `V_$DIAG_ALERT_EXT`. La verificación 16 comprueba que **no tiene ningún privilegio `ANY` de escritura** (`ops_ro_dml = 0`). No puede hacer DML ni DDL, crear usuarios, conceder privilegios, cambiar parámetros ni arrancar o parar la base. Además, es común y con `CONTAINER_DATA` ve todas las PDB desde la raíz.
+
+**38.** (1) Las **contraseñas de los `admin_*` escritas en V000** y guardadas en el historial de Git. V003 las invalida con `NO AUTHENTICATION`, y la contraseña antigua da ORA-01017. (2) **`sys/<contraseña>` en la línea de comandos** de `08-aplicar-migraciones.sh`, visible con `ps` para cualquier usuario del sistema. Ahora todo se ejecuta con `docker exec … sqlplus / as sysdba`, con autenticación del sistema operativo y sin contraseña. Además, la única contraseña que queda (la de C##OPS_RO) vive en `config/.env`, que está fuera de Git, y la verificación 16 lo comprueba.
+
 ---
 
 ## Preguntas tipo examen
 
-PENDIENTE.
+| P | Respuesta | Justificación | Dónde lo comprobé |
+| --- | --- | --- | --- |
+| 1 | **A, D** | Tras `SHUTDOWN IMMEDIATE` todos los archivos tienen el mismo SCN de checkpoint: la copia es consistente y abre con `STARTUP` sin redo. | Parte A (copia en frío, evidencia 00) |
+| 2 | **B** | Sin `MOVE DATAFILE` en línea (Enterprise Edition), el archivo se mueve con el tablespace OFFLINE, se copia con el SO y se hace `RENAME`; Oracle no copia nada. | Parte C (03-reubicar-datafiles) |
+| 3 | **A, C** | `STARTUP_TIME` cambió al recrear el contenedor (16:47) y `CREATED` sigue siendo el 2026-07-05; el DBID (1509902213) no cambió. | Parte E (evidencia 05) |
+| 4 | **A, C** | En NOMOUNT solo existe la instancia: se lee `v$parameter` y se puede ejecutar `CREATE CONTROLFILE`; el diccionario y ARCHIVELOG necesitan más. | Parte E (06-arranque-por-etapas) |
+| 5 | **B** | `ALTER DATABASE ARCHIVELOG` exige la base montada y no abierta (si está abierta, ORA-01126). | Parte E; lo haré en el Lab 5, Parte L |
+| 6 | **B** | Con SPFILE, el `SCOPE` por defecto es `BOTH`: memoria y SPFILE. | Parte F (07-parametros-cambios) |
+| 7 | **C** | `PROCESSES` es de toda la instancia y no se puede cambiar desde una PDB: ORA-65040. | Parte F (ORA-65040 desde la PDB) |
+| 8 | **A, C** | Se arranca con un PFILE bueno y se regenera el SPFILE a partir de él. | Parte F (PFILE versionado) |
+| 9 | **B** | Con `SGA_TARGET` > 0, ASMM reparte la SGA; un componente fijado actúa como mínimo. | Parte G (ASMM, pregunta 12) |
+| 10 | **A, D** | El área de ordenación y la memoria de sesión de un servidor dedicado son privadas (PGA); el resto es SGA. | Parte G (08-parse-y-pga) |
+| 11 | **C** | El COMMIT espera a que LGWR escriba el redo (`log file sync`); DBWn escribe los bloques más tarde. | Parte H; Lab 5, Parte N |
+| 12 | **B, D** | PMON y SMON siempre existen; ARCn solo en ARCHIVELOG y CJQ0 solo con jobs. | Parte H (09-procesos) |
+| 13 | **B** | Dentro de una PDB las V$ se filtran a su contenedor: SYS ve 9 datafiles de CON_ID 3. | Parte I (pregunta 16) |
+| 14 | **B** | Le falta el atributo `CONTAINER_DATA`, igual que a C##LAB4_AUDITOR. | Parte I (pregunta 18) |
+| 15 | **A, D** | El privilegio de esquema cubre las tablas futuras de HR y nada fuera de HR; READ no permite UPDATE. | Parte I (ADMIN_CLINICA siguió cerrado) |
+| 16 | **B, D** | Control files y redo online son la base; password file, SPFILE y alert log son relacionados. | Parte J (pregunta 21) |
+| 17 | **C** | Sin archivado ni copias multiplexadas en otro disco, solo queda la última copia completa. | Parte J (pregunta 23) |
+| 18 | **B** | Sin 'BIGFILE', la función reparte los bits como en SMALLFILE; con 'BIGFILE' sale el bloque 783 del volcado. | Parte K (12-bloque) |
+| 19 | **A, B** | PCTFREE es la reserva para que crezcan las filas; con PCTFREE 10 una fila aún puede migrar si crece más. | Partes K y M |
+| 20 | **B** | bfr = ⌊(8192 − 96) · 0,9 / 180⌋ = ⌊40,5⌋ = 40 → 2 000 000 / 40 = **50 000**. | Parte L (misma fórmula, pregunta 29) |
+| 21 | **B** | `db file scattered read` = lectura multibloque a la buffer cache (recorrido completo). | Parte L, sección 6 |
+| 22 | **A, C** | Se identifican con `LIST CHAINED ROWS` y se curan con `MOVE ONLINE` y más PCTFREE; DBMS_STATS no calcula `CHAIN_CNT`. | Parte M |
+| 23 | **B** | 12 000 bytes no caben en un bloque de 8 KB: fila encadenada que MOVE no arregla. | Parte M (ANCHA, `CHAIN_CNT` 1) |
+| 24 | **B** | Cuenta común de solo lectura con el GRANT puntual: es exactamente C##OPS_RO. | Partes B y N |
+| 25 | **B** | PDB$SEED es la plantilla de solo lectura (READ ONLY en la autopsia). | Parte I; autopsia sección 1 |
+| 26 | **C** | En una PDB solo se crean usuarios locales, y un nombre local no puede empezar por C##: ORA-65094. | Parte I (10-ciclo-vida-pdb) |
+| 27 | **B** | Una PDB abierta no se puede borrar (ORA-65025): primero `CLOSE IMMEDIATE`. | Parte I |
+| 28 | **A, C** | En MOUNT responden las vistas fijas que leen el control file (V$DATAFILE, V$LOG); las DBA_/CDB_ dan ORA-01219. | Parte E |
+| 29 | **A** | KCC = Kernel Cache Control file: X$KCCLE y X$KCCRT salen del control file. | Parte I (definición de V$LOG) |
+| 30 | **B** | Las CDB_ existen en la raíz y en cada PDB; desde una PDB solo devuelven sus filas (DBA_ 5 frente a CDB_ 15). | Parte I |
+| 31 | **B** | Los tempfiles no se respaldan: se recrean vacíos. | Parte J (punto de control TEMP) |
+| 32 | **B** | La instancia ya leyó el SPFILE al arrancar; sigue funcionando y `CREATE SPFILE FROM MEMORY` lo regenera. | Parte F |
+| 33 | **B** | V$PWFILE_USERS lista quién está en el password file (en mi base, solo SYS). | Parte J |
+| 34 | **A, B** | La cabecera del bloque contiene la ITL y el directorio de filas (slot array). | Parte K (volcado, secciones [A] y [B]) |
+| 35 | **B** | Con AUTOALLOCATE, primero extensiones de 64 KB y, al crecer, de 1 MB. | Parte K (12-bloque, sección 3) |
+| 36 | **B** | ASSM: el llenado de los bloques se gestiona con mapas de bits (FULL, FS1-FS4). | Partes K y L (DBMS_SPACE) |
+| 37 | **B** | Desde 23ai, el tablespace por defecto es BIGFILE y gestionado localmente (TBS_ACADEMIA). | Parte K |
+| 38 | **A** | 0 físicas significa que los 4 bloques estaban en la buffer cache (raíz, rama, hoja y tabla). | Parte L (5a: 4 por búsqueda) |
+| 39 | **A, B** | Más reserva libre o filas más largas = menos filas por bloque (ACA_MATRICULAS, 30 bytes y 199 por bloque, frente a ACA_ESTUDIANTES, 76 bytes y 87). | Parte L (reto) |
+| 40 | **B** | Vacía la caché de todas las sesiones, que vuelven a leer de disco: picos de latencia. | Parte L |
+| 41 | **B** | Migrada: cabía y se mudó al crecer; encadenada: no cabe en ningún bloque. | Parte M |
+| 42 | **A** | REBUILD (o haber usado MOVE ONLINE) recupera el índice UNUSABLE. | Parte M (PK_MIGRA) |
+| 43 | **A** | V$DIAG_ALERT_EXT lee el alert log con SQL; C##OPS_RO tiene su GRANT. | Partes J y N |
+| 44 | **A, B** | Se amplía el espacio y se investiga quién crece; borrar redo o reiniciar no tiene sentido. | Parte N (sección 5) |
+| 45 | **A, B** | Una sola instancia (SGA y procesos) y un solo redo para toda la CDB (CON_ID 0 en V$LOG). | Partes H e I |
+| 46 | **B** | Un usuario local sin `SET CONTAINER` recibe ORA-01031 (LAB4_ANALISTA). | Parte I |
