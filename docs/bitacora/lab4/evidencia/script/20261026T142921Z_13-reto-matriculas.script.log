@@ -1,5 +1,0 @@
-===== Reto L: ACA_MATRICULAS — predicción con la fórmula frente a estadísticas =====
-
-	 R    R_BYTES	PCT_FREE BLOQUES_BAJO_HWM BLOQUES_ASIGNADOS	BFR_U3 B_PREDICHO   BFR_REAL MS_FULL_HDD_150MBS
----------- ---------- ---------- ---------------- ----------------- ---------- ---------- ---------- ------------------
-     60000	   30	      10	      370		384	   242	      248      162.2		   19.3
