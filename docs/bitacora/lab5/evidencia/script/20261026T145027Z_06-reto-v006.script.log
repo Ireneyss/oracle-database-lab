@@ -1,0 +1,46 @@
+===== 0. Índices de CLIENTE hoy (tras V005) =====
+
+INDEX_NAME
+------------------
+COLUMNAS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+IX_CLI_PAIS_CIUDAD
+PAIS, CIUDAD
+
+PK_CLIENTE
+ID_CLIENTE
+
+UX_CLI_DNI
+DNI
+
+UX_CLI_EMAIL
+EMAIL
+
+===== 1. NECESIDAD y lecturas antes (Q5: identificar a quien llama por email o teléfono) =====
+Q5 antes                       filas=      1  lecturas l??gicas=   1486  f??sicas=    0      6.3 ms
+                               plan: TABLE ACCESS FULL CLIENTE
+CLIENTE antes: 2000 INSERT     filas=  2000  lecturas l??gicas=  22670  bloques modificados= 20454  redo=  2823 KB    42.5 ms  | por fila: 10.2 bloques, 1445 bytes de redo
+===== 2. VIABILIDAD: selectividad de telefono =====
+
+COLUMN_NAME    NUM_DISTINCT PCT_POR_VALOR
+-------------- ------------ -------------
+TELEFONO             100000          .001
+===== 3. Con el índice propuesto =====
+Q5 con ix_cli_telefono         filas=      1  lecturas l??gicas=      6  f??sicas=    0       .3 ms
+                               plan: TABLE ACCESS BY INDEX ROWID BATCHED CLIENTE > BITMAP CONVERSION TO ROWIDS > BITMAP OR > BITMAP CONVERSION FROM ROWIDS > INDEX RANGE SCAN UX_CLI_EMAIL > BITMAP CONV
+ERSION FROM ROWIDS > INDEX RANGE SCAN IX_CLI_TELEFONO
+CLIENTE despues: 2000 INSERT   filas=  2000  lecturas l??gicas=  26508  bloques modificados= 24294  redo=  3203 KB      60 ms  | por fila: 12.1 bloques, 1640 bytes de redo
+
+INDEX_NAME              HOJAS         MB
+------------------ ---------- ----------
+IX_CLI_TELEFONO           294          3
+===== 4. REDUNDANCIA: ¿algún índice de CLIENTE empieza por TELEFONO? =====
+
+INDICES_QUE_EMPIEZAN_POR_TELEFONO
+---------------------------------
+                                0
+===== 5. Limpieza: el experimento no se queda en la base =====
+
+INDICES_TIENDASUR
+-----------------
+                9
