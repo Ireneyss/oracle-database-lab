@@ -1,0 +1,13 @@
+SQL Format Cleared
+== Umbral real de guardia: FRA > 85 % o ninguna copia RMAN completada en 24 h (vacío = no despertar a nadie) ==
+
+0 rows selected. 
+
+== Prueba de que dispara: el mismo SQL con un umbral del 1 % (la FRA está por encima) ==
+
+ALERTA                                   DETALLE                                                               
+---------------------------------------- ----------------------------------------------------------------------
+FRA por encima del 1 %                   2.3 % usado de 4096 MB                                                
+
+1 row selected. 
+
