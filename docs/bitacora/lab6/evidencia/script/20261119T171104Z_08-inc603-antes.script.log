@@ -1,0 +1,15 @@
+== EVIDENCIA alumno=E066 hora=2026-11-19T17:11:04Z origen=06-app-sigue
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-19T16:08:30 scn=7295577
+Connection failed
+  USER          = app_academia
+  URL           = jdbc:oracle:thin:@//localhost:1521/academia_app
+  Error Message = ORA-28000: The account is locked; login denied.
+
+https://docs.oracle.com/error-help/db/ora-28000/
+
+SP2-0640: Not connected
+SP2-0640: Not connected
+SP2-0640: Not connected
+SP2-0640: Not connected
+-- Ya no puede insertar en el histórico (el permiso temporal de la Parte F se retiró): error esperado
+SP2-0640: Not connected
