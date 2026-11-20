@@ -27,6 +27,17 @@ git config user.name; git config user.email
 - **Dónde lo usé (parte, script o pregunta):** Antes de la Parte A (comprobaciones) y Parte A.2 (copia del kit)
 - **Propósito (para qué lo necesitaba):** copiar el kit del Lab 6 en mi repositorio y comprobar que partía de un repositorio sin commits ni archivos de agentes de IA
 - **Qué hace (con mis palabras; línea a línea si es SQL corto):** Comprobaciones inciales
-- **Evidencia de ejecución (archivo de docs/bitacora/lab6/evidencia con mi cabecera):** docs/bitacora/lab6/evidencia/script/<NOMBRE>_00-preparacion.script.log
+- **Evidencia de ejecución (archivo de docs/bitacora/lab6/evidencia con mi cabecera):** docs/bitacora/lab6/evidencia/script/20261118T181856Z_00-preparacion.script.log
 
 
+## Entrada 2
+- **Herramienta:** Claude
+- **Prompt (literal, copiado tal cual):**
+```text
+voy a pasarte mis respuestas para que me las revises:
+```
+- **Código recibido (el fragmento, o la ruta del archivo donde está):** no aplica (solo cambios de texto en lab6-respuestas.md; el archivo corregido lo pegué con cat > docs/bitacora/lab6-respuestas.md <<'FIN_RESPUESTAS', que solo escribe el archivo)
+- **Dónde lo usé (parte, script o pregunta):** lab6-respuestas.md, revisión final: evidencia de la pregunta 20, fila S6 del simulacro y formato de las preguntas 1 a 5
+- **Propósito (para qué lo necesitaba):** comprobar mis respuestas contra mis evidencias antes de entregar
+- **Qué hace (con mis palabras; línea a línea si es SQL corto):** me ha comprobado los errores que tenia en la bitacora para verificar que he responido bien a las preguntas.
+- **Evidencia de ejecución:** no aplica
