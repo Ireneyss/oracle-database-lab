@@ -1,0 +1,20 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+PL/SQL procedure successfully completed.
+
+Table created.
+
+SYS@FREE> UPDATE t6.pedido SET estado = 'E' WHERE id_pedido IN (SELECT id_pedido FROM t6.c13_cambio);
+
+135277 rows updated.
+
+SYS@FREE> COMMIT;
+
+Commit complete.
+
+SYS@FREE> EXIT

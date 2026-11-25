@@ -1,0 +1,21 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+== Las tres tandas y la ley de Little (throughput × latencia media ≈ sesiones) ==
+
+ETQ          SESIONES LLAMADAS_SEG MS_MEDIO CONCURRENCIA_LITTLE
+---------- ---------- ------------ -------- -------------------
+C01_N1              1          4.1    239.3                 1.0
+C01_N2              2          8.4    236.6                 2.0
+C01_N8              8          8.9    882.5                 7.8
+
+3 rows selected.
+
+== Lo que debes retener ==
+1. «Va lento» se convierte en números: throughput (llamadas/s) y latencia (p95) desde la telemetría (SLI).
+2. AAS > CPU_COUNT significa cola: el tiempo extra no es trabajo, es espera (resmgr:cpu quantum, ON CPU en cola).
+3. Más sesiones no es más rendimiento cuando el recurso ya está saturado: se dimensiona el pool a la capacidad.
+4. Antes de tocar el SQL se registra la línea base (sql_id, plan_hash, ms y gets por ejecución): t6 base ver

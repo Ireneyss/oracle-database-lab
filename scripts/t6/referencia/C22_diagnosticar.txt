@@ -1,0 +1,49 @@
+
+SYS@FREE> SET ECHO OFF
+== Asesor de la SGA: DB time estimado para cada tamaño (factor 1 = el actual) ==
+
+    SGA_MB FACTOR_TAMANO FACTOR_DB_TIME LECTURAS_FISICAS_EST
+---------- ------------- -------------- --------------------
+       768            .5         1.2774               235072
+      1152           .75         1.0195                92263
+      1536             1              1                81289
+      1920          1.25          .9906                79346
+      2304           1.5          .9878                77704
+      2688          1.75          .9878                77704
+      3072             2          .9878                77704
+
+7 rows selected.
+
+== Asesor de la PGA: aciertos de las áreas de trabajo y desbordes previstos ==
+
+    PGA_MB     FACTOR PCT_ACIERTOS DESBORDES_PREVISTOS
+---------- ---------- ------------ -------------------
+        64       .125           72                  26
+       128        .25           72                  26
+       256         .5           72                  26
+       384        .75           72                  22
+       512          1           97                   4
+       614        1.2          100                   0
+       717        1.4          100                   0
+       819        1.6          100                   0
+       922        1.8          100                   0
+      1024          2          100                   0
+      1536          3          100                   0
+      2048          4          100                   0
+      3072          6          100                   0
+      4096          8          100                   0
+
+14 rows selected.
+
+NAME                                    VALOR UNIDAD
+---------------------------------- ---------- ------------
+aggregate PGA target parameter            512 MB
+total PGA allocated                       654 MB
+maximum PGA allocated                     696 MB
+over allocation count                      11
+cache hit percentage                       88 percent
+
+5 rows selected.
+
+-- Lectura: en la SGA, ¿cuánto baja FACTOR_DB_TIME si la SGA crece? En la PGA, ¿a partir de qué tamaño
+-- desaparecen los desbordes (DESBORDES_PREVISTOS = 0) y deja de subir el % de aciertos?

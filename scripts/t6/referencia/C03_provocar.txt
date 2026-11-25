@@ -1,0 +1,23 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+PL/SQL procedure successfully completed.
+
+Table created.
+
+System altered.
+
+== 5 000 fichas de cliente con la versión de producción (literales) ... ==
+
+PL/SQL procedure successfully completed.
+
+MODO       LLAMADAS   MS_TOTAL MS_POR_FICHA
+-------- ---------- ---------- ------------
+LITERAL        5000       4790          .96
+
+1 row selected.
+

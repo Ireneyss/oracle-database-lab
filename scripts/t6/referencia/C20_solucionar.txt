@@ -1,0 +1,20 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+no rows selected
+
+Session altered.
+
+VALUE
+------------------------------------------------------------
+/opt/oracle/diag/rdbms/free/FREE/trace
+
+1 row selected.
+
+-- El diagnóstico apunta a dos cambios en la aplicación, que se piden a desarrollo con el tkprof como evidencia:
+-- 1) fichas con variables de enlace (ficha_bind, caso C03); 2) el panel de ventas fuera del flujo del alta (caso C01).
+-- El DBA no cambia el código: aporta la medida y vuelve a trazar después para demostrar la mejora.

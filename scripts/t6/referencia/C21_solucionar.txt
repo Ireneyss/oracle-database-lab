@@ -1,0 +1,26 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+TIPO           MENSAJE
+-------------- ----------------------------------------------------------------------------------------------------
+PROBLEM        The predicate TO_NUMBER("PEDIDO"."CODIGO_POSTAL")=:B1 used at line ID 2 of the execution plan contai
+PROBLEM        The execution plan of this statement can be improved by creating one or more indices.
+
+2 rows selected.
+
+ACCION
+----------------------------------------------------------------------------------------------------
+Rewrite the predicate into an equivalent form to take advantage of indices.
+Consider running the Access Advisor to improve the physical schema design or creating the recommende
+
+2 rows selected.
+
+== La decisión del DBA (se documenta en el ticket) ==
+Índice sobre TO_NUMBER(codigo_postal) ... NO: tapa el defecto; cada nueva consulta con NUMBER necesitaría otro.
+Perfil SQL (si lo propone) ............... NO: ajusta estimaciones, pero el filtro TO_NUMBER impide el índice igual.
+Reescribir el SQL / tipo de dato ......... SÍ: es la causa. La V2 (VARCHAR2) ya lo resuelve: casos C07 y C17.
+El asesor señala bien el SÍNTOMA; la CAUSA la confirma el DBA con el plan real y el código.

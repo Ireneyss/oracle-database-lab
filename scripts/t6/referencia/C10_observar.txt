@@ -1,0 +1,21 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+CHILD_NUMBER PLAN_HASH_VALUE EXECUTIONS  GETS_EJEC SENSIBLE CONSCIENTE
+------------ --------------- ---------- ---------- -------- ----------
+           0      1767728868          4       3674 Y        N
+           1      2571571058          2       5251 Y        Y
+
+2 rows selected.
+
+PL/SQL procedure successfully completed.
+
+== Lo que debes retener ==
+1. Bind peeking: en el hard parse Oracle MIRA el valor de la variable y elige el plan para ese valor.
+2. Con datos sesgados (histograma), el cursor es SENSIBLE; si el coste real cambia mucho, pasa a CONSCIENTE (ACS).
+3. Las primeras ejecuciones con el valor «malo» pagan el plan equivocado: ACS aprende, no adivina.
+4. Variante de examen: ¿por qué un informe va lento solo a veces? Mira los hijos en V$SQL y V$SQL_CS_STATISTICS.

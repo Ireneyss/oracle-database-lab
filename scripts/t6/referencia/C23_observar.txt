@@ -1,0 +1,27 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+Index altered.
+
+Index dropped.
+
+INDEX_NAME           VISIBILIT
+-------------------- ---------
+IX_T6_C14_PEND       VISIBLE
+IX_T6_PED_CLIENTE    VISIBLE
+IX_T6_PED_CP         VISIBLE
+IX_T6_PED_ESTADO     VISIBLE
+IX_T6_PED_FECHA      VISIBLE
+PK_T6_PEDIDO         VISIBLE
+
+6 rows selected.
+
+== Lo que debes retener (runbook RB-3) ==
+1. Antes de crear: inventario (columnas EN ORDEN), redundancia por prefijo, selectividad real y uso: t6 indices TABLA.
+2. Un índice (A) queda cubierto por (A, B) para buscar por A; al revés, no.
+3. Retirar con red: INVISIBLE una temporada vigilando DBA_INDEX_USAGE y AWR; borrar después.
+4. Cuidado con las FK: la columna hija sin índice inicial provoca bloqueos de tabla al borrar o actualizar el padre.

@@ -1,0 +1,42 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF LINESIZE 160
+
+VERSION SQL_ID        PLAN_HASH_VALUE EJECUCIONES MS_POR_EJEC GETS_POR_EJEC
+------- ------------- --------------- ----------- ----------- -------------
+V1      0dbx7196jdajy      2571571058        2852       121.7          5246
+V2      53mx77snb43uw      2982358210       34024         .27            93
+
+2 rows selected.
+
+== El plan de la V1, guardado en AWR (sirve aunque el cursor ya no esté en memoria) ==
+-- En una PDB: awr_location => 'AWR_PDB'. Sin él se lee el AWR de la raíz y no sale nada.
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL_ID 0dbx7196jdajy
+--------------------
+SELECT /*+ t6_cp_v1 */ COUNT(*), SUM(IMPORTE) FROM T6.PEDIDO WHERE
+CODIGO_POSTAL = :B1
+
+Plan hash value: 2571571058
+
+----------------------------------------------------------
+| Id  | Operation          | Name   | Rows  | Cost (%CPU)|
+----------------------------------------------------------
+|   0 | SELECT STATEMENT   |        |       |  1456 (100)|
+|   1 |  SORT AGGREGATE    |        |     1 |            |
+|   2 |   TABLE ACCESS FULL| PEDIDO |    91 |  1456   (2)|
+----------------------------------------------------------
+
+15 rows selected.
+
+== Lo que debes retener (método de los 8 pasos, playbook PB-2) ==
+1. Definir: el síntoma en SLI y SLO (p95 < 20 ms), no en adjetivos. Línea base ANTES de tocar nada (t6 base, t6 awr snap).
+2. De lo general a lo concreto: ASH dice quién y en qué; AWR, qué SQL del intervalo; ADDM lo cuantifica; el plan, por qué.
+3. UN solo cambio y la MISMA carga para medir: así la mejora tiene una causa demostrable.
+4. La evidencia del cierre: AWR antes y después del mismo SQL (deltas), no una impresión.
+5. Variante de examen: ADDM propone «SQL Tuning Advisor» o un índice; la causa real era el tipo de dato (caso C21).

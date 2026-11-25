@@ -1,0 +1,21 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+ETQ        FILAS_POR_COMMIT   MS_TOTAL     CPU_MS    COMMITS ESPERAS_LFS     MS_LFS  REDO_KB
+---------- ---------------- ---------- ---------- ---------- ----------- ---------- --------
+POR_FILA                  1       5680       1460      20000       20000       4330   12,196
+POR_LOTE               1000        290        260         20          20         32    5,775
+
+2 rows selected.
+
+== Lo que debes retener ==
+1. DB time = DB CPU + esperas. Si la CPU explica poco del tiempo, la respuesta está en los eventos de espera.
+2. «log file sync» se paga en cada COMMIT: se arregla con transacciones del tamaño del negocio, no con discos.
+3. Variante de examen: COMMIT WRITE BATCH NOWAIT también lo reduce, pero renuncia a la durabilidad inmediata.
+Un DBA no la propone sin que el negocio acepte perder las últimas confirmaciones si cae la instancia.
+4. Dentro de un bucle PL/SQL Oracle no espera en cada COMMIT (optimización de PL/SQL): mide siempre como
+trabaja la aplicación real (aquí, COMMIT WRITE WAIT), o el laboratorio te dará una cifra que producción no verá.

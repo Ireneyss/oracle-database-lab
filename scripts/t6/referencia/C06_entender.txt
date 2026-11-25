@@ -1,0 +1,14 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+FORMA           EXECUTIONS    MS_EJEC     CPU_MS       GETS
+--------------- ---------- ---------- ---------- ----------
+plsql                    1       1141       1105       5736
+
+1 row selected.
+
+-- Lectura: 5 312 bloques en memoria se leen en décimas de segundo. El resto del tiempo, ¿dónde se va?

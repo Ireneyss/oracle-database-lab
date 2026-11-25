@@ -1,0 +1,13 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+== 1 · Fuera el redundante (IX_C15_5 = prefijo de IX_C15_4) ==
+
+Index dropped.
+
+CINCO_INDICES  índices=5   1750 ms   redo 90.5 MB
+== 2 · Carga masiva: índices UNUSABLE durante la carga y REBUILD al final (skip_unusable_indexes = TRUE) ==
+UNUSABLE+RB  índices=5   730 ms (carga + reconstrucción)

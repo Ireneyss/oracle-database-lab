@@ -1,0 +1,41 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF SERVEROUTPUT OFF LINESIZE 170
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL_ID  bnag9ywujxy3q, child number 0
+-------------------------------------
+SELECT /*+ GATHER_PLAN_STATISTICS LEADING(c p) USE_NL(p) INDEX(p
+ix_t6_ped_cliente) t6_c05_nl */ c.id_cliente, SUM(p.importe) AS total
+FROM t6.cliente c JOIN t6.pedido p ON p.id_cliente = c.id_cliente WHERE
+c.pais = 'ES' GROUP BY c.id_cliente
+
+Plan hash value: 1824502428
+
+-----------------------------------------------------------------------------------------------------------------------
+| Id  | Operation                      | Name              | Starts | E-Rows | A-Rows |   A-Time   | Buffers | Reads  |
+-----------------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT               |                   |      1 |        |  60115 |00:00:01.46 |     646K|      7 |
+|   1 |  SORT GROUP BY NOSORT          |                   |      1 |   2500 |  60115 |00:00:01.46 |     646K|      7 |
+|   2 |   NESTED LOOPS                 |                   |      1 |  24798 |    601K|00:00:01.61 |     646K|      7 |
+|   3 |    NESTED LOOPS                |                   |      1 |  25000 |    601K|00:00:00.39 |   45314 |      7 |
+|*  4 |     TABLE ACCESS BY INDEX ROWID| CLIENTE           |      1 |   2500 |  60117 |00:00:00.08 |    9541 |      0 |
+|   5 |      INDEX FULL SCAN           | PK_T6_CLIENTE     |      1 |    100K|    100K|00:00:00.02 |    4206 |      0 |
+|*  6 |     INDEX RANGE SCAN           | IX_T6_PED_CLIENTE |  60117 |     10 |    601K|00:00:00.15 |   35773 |      7 |
+|   7 |    TABLE ACCESS BY INDEX ROWID | PEDIDO            |    601K|     10 |    601K|00:00:00.99 |     600K|      0 |
+-----------------------------------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   4 - filter("C"."PAIS"='ES')
+   6 - access("P"."ID_CLIENTE"="C"."ID_CLIENTE")
+
+28 rows selected.
+
+-- Lectura: la parte interna del NESTED LOOPS se repite UNA VEZ POR CLIENTE de España (Starts ≈ 60 000).
+-- Bucles anidados = pocas filas de entrada. Con el 60 % de los clientes, el método correcto es HASH JOIN.

@@ -1,0 +1,55 @@
+   archivo de traza: /opt/oracle/diag/rdbms/free/FREE/trace/FREE_ora_6413_C20.trc
+   informe completo: ~/oracle-database-lab/scripts/t6/salidas/tkprof_C20.prf
+   ---- las dos sentencias SQL más lentas (sort=exeela; se omiten los bloques PL/SQL que las llaman) ----
+SQL ID: 1sn1a6j3ygm4g Plan Hash: 3489591789
+SELECT /*+ t6_panel */ COUNT(*) 
+FROM
+ T6.PEDIDO WHERE MOD(ID_PEDIDO * 7, 13) = 3
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse       16      0.00       0.00          0          0          0           0
+Execute     16      0.00       0.00          0          0          0           0
+Fetch       16      3.74       3.77          0      33632          0          16
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total       48      3.74       3.77          0      33632          0          16
+Misses in library cache during parse: 0
+Optimizer mode: ALL_ROWS
+Parsing user id: 160     (recursive depth: 1)
+Number of plan statistics captured: 16
+Rows (1st) Rows (avg) Rows (max)  Row Source Operation
+---------- ---------- ----------  ---------------------------------------------------
+         1          1          1  SORT AGGREGATE (cr=2102 pr=0 pw=0 time=235982 us starts=1 direct read=0 direct write=0
+     76923      76923      76923   INDEX FAST FULL SCAN PK_T6_PEDIDO (cr=2102 pr=0 pw=0 time=244580 us starts=1 direct r
+************************************************************
+SQL ID: 7zf0zrcvauc05 Plan Hash: 146357669
+SELECT /* t6_ficha */ nombre, ciudad 
+FROM
+ t6.cliente WHERE id_cliente = 43092
+call     count       cpu    elapsed       disk      query    current        rows
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+Parse        1      0.00       0.00          0          0          0           0
+Execute      1      0.00       0.00          0          0          0           0
+Fetch        1      0.00       0.00          0          3          0           1
+------- ------  -------- ---------- ---------- ---------- ----------  ----------
+total        3      0.00       0.00          0          3          0           1
+Misses in library cache during parse: 1
+Optimizer mode: ALL_ROWS
+Parsing user id: 160     (recursive depth: 1)
+Number of plan statistics captured: 1
+Rows (1st) Rows (avg) Rows (max)  Row Source Operation
+---------- ---------- ----------  ---------------------------------------------------
+         1          1          1  TABLE ACCESS BY INDEX ROWID CLIENTE (cr=3 pr=0 pw=0 time=18 us starts=1 direct read=0 
+         1          1          1   INDEX UNIQUE SCAN PK_T6_CLIENTE (cr=2 pr=0 pw=0 time=9 us starts=1 direct read=0 dire
+************************************************************
+
+   ---- análisis (parse) frente a ejecuciones, en todo el archivo ----
+Parse     3318      3.02       3.10          0          6          0           0
+Execute   3324      0.05       0.04          0          0          0           0
+Fetch     3324      3.77       3.82          0      43554          0        3324
+total     9966      6.86       6.97          0      43560          0        3324
+   3296 Misses in library cache during parse: 1
+      3 Misses in library cache during parse: 0
+      1 Misses in library cache during parse: 3300
+   -- Lectura: arriba sale el panel de ventas (pocas ejecuciones, mucho tiempo cada una): son los «tirones».
+   -- La segunda es UNA de las miles de fichas: con literales, cada ficha es una sentencia distinta en el informe,
+   -- y miles de «Misses in library cache during parse: 1» = un análisis completo por ficha (caso C03).

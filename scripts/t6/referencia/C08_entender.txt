@@ -1,0 +1,36 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+== La realidad ==
+
+CLIENTES_REALES
+---------------
+             56
+
+1 row selected.
+
+MAX_COMUNIDADES_POR_CIUDAD
+--------------------------
+                         1
+
+1 row selected.
+
+== Lo que sabe el optimizador de cada columna POR SEPARADO ==
+
+COLUMN_NAME      NUM_DISTINCT HISTOGRAM
+---------------- ------------ ---------------
+CIUDAD                   2000 NONE
+COMUNIDAD                  18 NONE
+
+2 rows selected.
+
+  NUM_ROWS ESTIMACION_INDEPENDIENTE
+---------- ------------------------
+    100000                      2.9
+
+1 row selected.
+
+-- Lectura: 100 000 × 1/2 000 × 1/17 ≈ 3 clientes. Son 56: el error está en suponer que son independientes.

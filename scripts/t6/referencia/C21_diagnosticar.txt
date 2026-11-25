@@ -1,0 +1,68 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF SERVEROUTPUT OFF
+
+PL/SQL procedure successfully completed.
+
+GENERAL INFORMATION SECTION
+-------------------------------------------------------------------------------
+Tuning Task Name   : T6_C21_STA
+Tuning Task Owner  : SYS
+Workload Type      : Single SQL Statement
+Scope              : COMPREHENSIVE
+Time Limit(seconds): 60
+Completion Status  : COMPLETED
+Started at         : 11/25/2026 14:27:02
+Completed at       : 11/25/2026 14:27:03
+
+-------------------------------------------------------------------------------
+Schema Name   : T6
+Container Name: FREEPDB1
+SQL ID        : 0dbx7196jdajy
+SQL Text      : SELECT /*+ t6_cp_v1 */ COUNT(*), SUM(IMPORTE) FROM T6.PEDIDO
+                WHERE CODIGO_POSTAL = :B1
+Bind Variables: :
+ 1 -  (NUMBER):30001
+
+-------------------------------------------------------------------------------
+FINDINGS SECTION (2 findings)
+-------------------------------------------------------------------------------
+
+1- Index Finding (see explain plans section below)
+--------------------------------------------------
+  The execution plan of this statement can be improved by creating one or more
+  indices.
+
+  Recommendation (estimated benefit: 97.18%)
+  ------------------------------------------
+  - Consider running the Access Advisor to improve the physical schema design
+    or creating the recommended index.
+    create index T6.IDX$$_00AE0001 on T6.PEDIDO(TO_NUMBER("CODIGO_POSTAL"));
+
+  Rationale
+  ---------
+    Creating the recommended indices significantly improves the execution plan
+    of this statement. However, it might be preferable to run "Access Advisor"
+    using a representative SQL workload as opposed to a single statement. This
+    will allow to get comprehensive index recommendations which takes into
+    account index maintenance overhead and additional space consumption.
+
+2- Restructure SQL finding (see plan 1 in explain plans section)
+----------------------------------------------------------------
+  The predicate TO_NUMBER("PEDIDO"."CODIGO_POSTAL")=:B1 used at line ID 2 of
+  the execution plan contains an implicit data type conversion on indexed
+  column "CODIGO_POSTAL". This implicit data type conversion prevents the
+  optimizer from selecting indices on table "T6"."PEDIDO".
+
+  Recommendation
+  --------------
+  - Rewrite the predicate into an equivalent form to take advantage of
+    indices.
+
+-------------------------------------------------------------------------------
+
+1 row selected.
+

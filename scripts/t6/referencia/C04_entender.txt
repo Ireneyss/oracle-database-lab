@@ -1,0 +1,16 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+== Lo que costó el informe ==
+
+MODO                FILAS         MS TEMP_ESCRITOS MB_TEMP
+-------------- ---------- ---------- ------------- -------
+LEGADO            1000000       1230          5456    42.6
+
+1 row selected.
+
+-- Lectura: escribió en TEMP (disco) para ORDENAR. Una ordenación es bloqueante: hasta tener la última fila
+-- no puede devolver la primera. Si no cabe en memoria, va a disco y vuelve a leerla.

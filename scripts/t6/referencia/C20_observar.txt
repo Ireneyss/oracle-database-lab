@@ -1,0 +1,12 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+== Lo que debes retener ==
+1. Se traza lo justo: DBMS_MONITOR por servicio, módulo y acción (o por sesión) y se desactiva al acabar.
+2. tkprof sort=exeela,fchela pone arriba lo que más tarda; sys=no quita el SQL recursivo de Oracle.
+3. Por sentencia: count, cpu, elapsed, disk, query (lecturas lógicas) y rows en Parse, Execute y Fetch.
+4. Parse casi igual a Execute y «Misses in library cache» = análisis completos: falta usar variables (C03).
+5. Una traza por sesión: para juntar varias del mismo módulo, trcsess module=tienda_web y luego tkprof.

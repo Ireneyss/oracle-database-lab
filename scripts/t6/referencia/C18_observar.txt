@@ -1,0 +1,75 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+== El optimizador quería el recorrido completo: lo guarda en la historia del plan, NO aceptado ==
+
+PLAN_NAME                        ENA ACC ORIGIN
+-------------------------------- --- --- --------------------------
+SQL_PLAN_0a27u7nan424ba00b9863   YES YES MANUAL-LOAD-FROM-AWR
+SQL_PLAN_0a27u7nan424b95a18d93   YES NO  AUTO-CAPTURE
+
+2 rows selected.
+
+== Evolución: Oracle ejecuta los dos planes, los compara y acepta el nuevo SOLO si es mejor ==
+
+PL/SQL procedure successfully completed.
+
+GENERAL INFORMATION SECTION
+---------------------------------------------------------------------------------------------
+
+ Task Information:
+ ---------------------------------------------
+ Task Name            : TASK_173
+ Task Owner           : SYS
+ Execution Name       : EXEC_143
+ Execution Type       : SPM EVOLVE
+ Scope                : COMPREHENSIVE
+ Status               : COMPLETED
+ Started              : 11/25/2026 14:26:11
+ Finished             : 11/25/2026 14:26:11
+ Last Updated         : 11/25/2026 14:26:11
+ Global Time Limit    : 2147483646
+ Per-Plan Time Limit  : UNUSED
+ Number of Errors     : 0
+---------------------------------------------------------------------------------------------
+
+DETAILS SECTION
+---------------------------------------------------------------------------------------------
+ Object ID          : 2
+ Test Plan Name     : SQL_PLAN_0a27u7nan424b95a18d93
+ Base Plan Name     : SQL_PLAN_0a27u7nan424ba00b9863
+ SQL Handle         : SQL_0508fa3d1542088b
+ Parsing Schema     : T6_APP
+ Test Plan Creator  : T6_APP
+ SQL Text           : SELECT /* t6_c18_pendientes */ COUNT(*), SUM(importe),
+                    MAX(fecha_pedido) FROM t6.pedido WHERE estado = 'P'
+
+FINDINGS SECTION
+---------------------------------------------------------------------------------------------
+
+Findings (1):
+-----------------------------
+ 1. The plan was verified in 0.30400 seconds. It failed the benefit criterion
+    because its verified performance was 0.16580 times worse than that of the
+    baseline plan.
+
+---------------------------------------------------------------------------------------------
+
+1 row selected.
+
+PLAN_NAME                        ENA ACC ORIGIN
+-------------------------------- --- --- --------------------------
+SQL_PLAN_0a27u7nan424ba00b9863   YES YES MANUAL-LOAD-FROM-AWR
+SQL_PLAN_0a27u7nan424b95a18d93   YES NO  AUTO-CAPTURE
+
+2 rows selected.
+
+== Lo que debes retener ==
+1. SPM no adivina el mejor plan: protege el plan PROBADO. Un plan nuevo entra como no aceptado y espera su evolución.
+2. Fuentes de planes: caché de cursores (t6 spm cargar SQL_ID), AWR (LOAD_PLANS_FROM_AWR) o un SQL Tuning Set.
+3. La sentencia la debe analizar la cuenta de la aplicación: con SYS la evolución falla (ORA-16963).
+4. La causa sigue ahí (las preferencias SIZE 1): SPM da tiempo, pero el DBA arregla también las estadísticas (C13, RB-2).
+5. Variante de examen: «el plan cambió tras un parche»: DBA_HIST_SQLSTAT por PLAN_HASH_VALUE y SPM (playbook PB-3).

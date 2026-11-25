@@ -1,0 +1,14 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+SQL_ID           MS_EJEC  GETS_EJEC      FILAS GETS_POR_FILA
+------------- ---------- ---------- ---------- -------------
+bnag9ywujxy3q       1414     646240      60115          10.8
+
+1 row selected.
+
+-- Lectura: unas 10 lecturas lógicas por fila devuelta. ¿De dónde salen? El plan lo dice (columna Starts).

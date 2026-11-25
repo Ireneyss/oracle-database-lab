@@ -1,0 +1,17 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+== Cargando 20 000 ventas con COMMIT cada 1 000 filas ... ==
+
+PL/SQL procedure successfully completed.
+
+ETQ          MS_TOTAL  FILAS_SEG
+---------- ---------- ----------
+POR_FILA         5680       3521
+POR_LOTE          290      68966
+
+2 rows selected.
+

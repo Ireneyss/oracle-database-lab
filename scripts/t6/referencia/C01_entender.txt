@@ -1,0 +1,16 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+== El SLI de la web, por tanda ==
+
+ETQ          SESIONES   LLAMADAS LLAMADAS_SEG   MS_P50   MS_P95
+---------- ---------- ---------- ------------ -------- --------
+C01_N1              1         84          4.1    225.5    315.0
+C01_N8              8        365          8.9    932.8   1329.8
+
+2 rows selected.
+
+-- Lectura: con 8 veces más sesiones, ¿se atienden 8 veces más llamadas por segundo? ¿Qué le pasa a la latencia?

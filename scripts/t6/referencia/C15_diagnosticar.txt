@@ -1,0 +1,21 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+PL/SQL procedure successfully completed.
+
+INDEX_NAME COLUMNAS                     LEAF_BLOCKS COMENTARIO
+---------- ---------------------------- ----------- ------------------------------------------------------------
+IX_C15_1   ID_PEDIDO                            199 Clave del pedido: en la tabla real ya la cubre la PK
+IX_C15_2   ID_CLIENTE                           258 -
+IX_C15_3   FECHA_PEDIDO                         239 -
+IX_C15_4   ESTADO, FECHA_PEDIDO                 507 -
+IX_C15_5   ESTADO                               272 REDUNDANTE: ESTADO es el prefijo de IX_C15_4
+IX_C15_6   CODIGO_POSTAL, IMPORTE               397 -
+
+6 rows selected.
+
+-- La herramienta del kit lo hace sola para cualquier tabla:   t6 indices C15_CARGA

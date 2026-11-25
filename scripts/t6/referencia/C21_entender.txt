@@ -1,0 +1,22 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+SQL_ID
+-------------
+ESQUEMA
+--------------------------------------------------------------------------------------------------------------------------------
+EXECUTIONS  GETS_EJEC SQL_TEXT
+---------- ---------- --------------------------------------------------------------------------------
+0dbx7196jdajy
+T6
+       123       5227 SELECT /*+ t6_cp_v1 */ COUNT(*), SUM(IMPORTE) FROM T6.PEDIDO WHERE CODIGO_POSTAL
+                       = :B1
+
+1 row selected.
+
+-- Lectura: el asesor ve UNA sentencia y sus estadísticas; no ve el código de la aplicación que la llama con un
+-- NUMBER. Analiza estadísticas, rutas de acceso, estructura del SQL y perfiles, y PROPONE. No despliega nada.

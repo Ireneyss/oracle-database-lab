@@ -1,0 +1,3 @@
+OK    Hay informe tkprof del módulo: salidas/tkprof_C20.prf
+OK    El informe contiene el panel de ventas (la sentencia de los tirones)
+OK    No queda ninguna traza activa (DBA_ENABLED_TRACES vacía)

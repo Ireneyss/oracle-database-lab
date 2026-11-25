@@ -1,0 +1,71 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET LINESIZE 170
+SYS@FREE> SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(
+  2    (SELECT sql_id FROM v$sql WHERE sql_text LIKE 'SELECT /*+ t6_c14_panel */%' AND ROWNUM = 1), NULL, 'TYPICAL -NOTE -HINT_REPORT'));
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL_ID  8gvrjd4apd0mk, child number 0
+-------------------------------------
+SELECT /*+ t6_c14_panel */ COUNT(*), SUM(IMPORTE) FROM T6.PEDIDO WHERE
+ESTADO = 'P' AND CANAL = 'T' AND FECHA_PEDIDO >= DATE '2026-01-01'
+
+Plan hash value: 2571571058
+
+-----------------------------------------------------------------------------
+| Id  | Operation          | Name   | Rows  | Bytes | Cost (%CPU)| Time     |
+-----------------------------------------------------------------------------
+|   0 | SELECT STATEMENT   |        |       |       |  1455 (100)|          |
+|   1 |  SORT AGGREGATE    |        |     1 |    16 |            |          |
+|*  2 |   TABLE ACCESS FULL| PEDIDO | 24962 |   390K|  1455   (2)| 00:00:01 |
+-----------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   2 - filter(("FECHA_PEDIDO">=TIMESTAMP' 2026-01-01 00:00:00' AND
+              "ESTADO"='P' AND "CANAL"='T'))
+
+21 rows selected.
+
+SYS@FREE> COLUMN index_name FORMAT A20
+SYS@FREE> COLUMN columnas FORMAT A40
+SYS@FREE> SELECT i.index_name, LISTAGG(c.column_name, ', ') WITHIN GROUP (ORDER BY c.column_position) AS columnas, i.distinct_keys
+  2    FROM dba_indexes i JOIN dba_ind_columns c ON c.index_owner = i.owner AND c.index_name = i.index_name
+  3   WHERE i.owner = 'T6' AND i.table_name = 'PEDIDO' GROUP BY i.index_name, i.distinct_keys ORDER BY 1;
+
+INDEX_NAME           COLUMNAS                                 DISTINCT_KEYS
+-------------------- ---------------------------------------- -------------
+IX_T6_PED_CLIENTE    ID_CLIENTE                                      100816
+IX_T6_PED_CP         CODIGO_POSTAL                                    11000
+IX_T6_PED_ESTADO     ESTADO                                               4
+IX_T6_PED_FECHA      FECHA_PEDIDO                                    995008
+PK_T6_PEDIDO         ID_PEDIDO                                      1000000
+
+5 rows selected.
+
+SYS@FREE> COLUMN column_name FORMAT A14
+SYS@FREE> SELECT column_name, num_distinct, histogram FROM dba_tab_col_statistics
+  2   WHERE owner = 'T6' AND table_name = 'PEDIDO' AND column_name IN ('ESTADO', 'CANAL', 'FECHA_PEDIDO');
+
+COLUMN_NAME    NUM_DISTINCT HISTOGRAM
+-------------- ------------ ---------------
+FECHA_PEDIDO         995008 NONE
+ESTADO                    4 NONE
+CANAL                     3 NONE
+
+3 rows selected.
+
+SYS@FREE> PROMPT -- Lectura: TABLE ACCESS FULL con los tres filtros. El índice de ESTADO existe, pero solo con 4 valores y sin
+-- Lectura: TABLE ACCESS FULL con los tres filtros. El índice de ESTADO existe, pero solo con 4 valores y sin
+SYS@FREE> PROMPT -- histograma el optimizador estima 250 000 filas en P y lo descarta. Ningún índice combina estado, canal y fecha.
+-- histograma el optimizador estima 250 000 filas en P y lo descarta. Ningún índice combina estado, canal y fecha.
+SYS@FREE> PROMPT -- Propuesta: un índice (estado, canal, fecha_pedido). Primero las igualdades, el rango al final.
+-- Propuesta: un índice (estado, canal, fecha_pedido). Primero las igualdades, el rango al final.
+SYS@FREE> PROMPT -- Fíjate también en E-Rows (unas 25 000) frente a las 2 056 reales: sin histograma, la estimación es una media.
+-- Fíjate también en E-Rows (unas 25 000) frente a las 2 056 reales: sin histograma, la estimación es una media.
+SYS@FREE> EXIT

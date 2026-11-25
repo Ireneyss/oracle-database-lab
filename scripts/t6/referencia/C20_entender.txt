@@ -1,0 +1,15 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+ETQ          LLAMADAS     P50_MS     P99_MS     MAX_MS
+---------- ---------- ---------- ---------- ----------
+C20_ALTA         8364       1.09       2.96      352.1
+
+1 row selected.
+
+-- Lectura: la mediana es buena y la cola (p99, máximo) no. Con una media no se vería. ¿Qué llamadas son las lentas?
+-- ASH muestrea una vez por segundo y se pierde lo que dura milisegundos: la traza registra TODAS las llamadas.

@@ -1,0 +1,15 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+SQL_ID        STATUS           SQL_EXEC_START              MS BUFFER_GETS  MB_LEIDOS MB_ESCRITOS
+------------- ---------------- ------------------- ---------- ----------- ---------- -----------
+5k6p6c2y1bpvs DONE (ALL ROWS)  2026-11-25 14:26:13       1800        6647        106          83
+
+1 row selected.
+
+-- Lectura: SQL Monitor vigila solo las sentencias de más de 5 s, las paralelas o las que piden /*+ MONITOR */.
+-- Escribir MB a disco en una consulta de lectura es la pista: algo se está desbordando a TEMP.

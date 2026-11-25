@@ -1,0 +1,9 @@
+
+SYS@FREE> SET ECHO OFF
+1. SELECT * FROM t6.pedido WHERE importe * 2 > 900                         (expresión sobre la columna)
+2. SELECT * FROM t6.pedido WHERE id_pedido = 4711                          (igualdad en la clave primaria)
+3. SELECT * FROM t6.pedido WHERE fecha_pedido >= SYSDATE - 1                (rango estrecho, índice no único)
+4. SELECT id_pedido, importe FROM t6.pedido ORDER BY id_pedido DESC FETCH FIRST 10 ROWS ONLY
+5. SELECT COUNT(*) FROM t6.pedido                                           (columna NOT NULL indexada)
+6. SELECT canal, importe FROM t6.pedido WHERE importe = 123.45              (segunda columna de un índice)
+7. SELECT * FROM t6.pedido WHERE id_cliente > 20000                         (el 80 % de las filas)

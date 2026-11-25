@@ -1,0 +1,12 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    SQL Monitor tiene las dos ejecuciones (antes y después)
+OK    Escritura en TEMP: 4 MB frente a 83 MB
+OK    Duración: 946 ms frente a 1800 ms

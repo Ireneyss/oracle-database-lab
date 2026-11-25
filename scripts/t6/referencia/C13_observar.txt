@@ -1,0 +1,99 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET SERVEROUTPUT OFF
+SYS@FREE> COLUMN cuando FORMAT A19
+SYS@FREE> PROMPT == 1 · El historial: cada recogida guarda la anterior (retención en días) ==
+== 1 · El historial: cada recogida guarda la anterior (retención en días) ==
+SYS@FREE> SELECT TO_CHAR(stats_update_time, 'YYYY-MM-DD HH24:MI:SS') AS cuando FROM dba_tab_stats_history
+  2   WHERE owner = 'T6' AND table_name = 'PEDIDO' ORDER BY stats_update_time DESC FETCH FIRST 3 ROWS ONLY;
+
+CUANDO
+-------------------
+2026-11-25 14:20:40
+2026-11-25 14:20:29
+2026-11-25 14:20:11
+
+3 rows selected.
+
+SYS@FREE> SELECT DBMS_STATS.GET_STATS_HISTORY_RETENTION AS dias_de_retencion FROM dual;
+
+DIAS_DE_RETENCION
+-----------------
+               31
+
+1 row selected.
+
+SYS@FREE> PROMPT == 2 · Si la publicación hubiera empeorado algo: restaurar las de hace 1 minuto (sin histograma) ==
+== 2 · Si la publicación hubiera empeorado algo: restaurar las de hace 1 minuto (sin histograma) ==
+SYS@FREE> EXEC DBMS_STATS.RESTORE_TABLE_STATS('T6', 'PEDIDO', SYSTIMESTAMP - INTERVAL '60' SECOND, no_invalidate => FALSE)
+
+PL/SQL procedure successfully completed.
+
+SYS@FREE> SELECT column_name, histogram FROM dba_tab_col_statistics WHERE owner = 'T6' AND table_name = 'PEDIDO' AND column_name = 'ESTADO';
+
+COLUMN_NAME      HISTOGRAM
+---------------- ---------------
+ESTADO           NONE
+
+1 row selected.
+
+SYS@FREE> PROMPT == 3 · Bloquear: una recogida posterior falla A PROPÓSITO con ORA-20005 (así se protege una tabla de trabajo) ==
+== 3 · Bloquear: una recogida posterior falla A PROPÓSITO con ORA-20005 (así se protege una tabla de trabajo) ==
+SYS@FREE> EXEC DBMS_STATS.LOCK_TABLE_STATS('T6', 'PEDIDO')
+
+PL/SQL procedure successfully completed.
+
+SYS@FREE> SELECT stattype_locked FROM dba_tab_statistics WHERE owner = 'T6' AND table_name = 'PEDIDO';
+
+STATT
+-----
+ALL
+
+1 row selected.
+
+SYS@FREE> EXEC DBMS_STATS.GATHER_TABLE_STATS('T6', 'PEDIDO')
+BEGIN DBMS_STATS.GATHER_TABLE_STATS('T6', 'PEDIDO'); END;
+
+*
+ERROR at line 1:
+ORA-20005: object statistics are locked (stattype = ALL)
+ORA-06512: at "SYS.DBMS_STATS", line 46128
+ORA-06512: at "SYS.DBMS_STATS", line 45502
+ORA-06512: at "SYS.DBMS_STATS", line 9352
+ORA-06512: at "SYS.DBMS_STATS", line 10758
+ORA-06512: at "SYS.DBMS_STATS", line 44642
+ORA-06512: at "SYS.DBMS_STATS", line 45650
+ORA-06512: at "SYS.DBMS_STATS", line 46109
+ORA-06512: at line 1
+
+SYS@FREE> EXEC DBMS_STATS.UNLOCK_TABLE_STATS('T6', 'PEDIDO')
+
+PL/SQL procedure successfully completed.
+
+SYS@FREE> PROMPT == 4 · Se devuelve PEDIDO a su estado inicial (para los demás casos) ==
+== 4 · Se devuelve PEDIDO a su estado inicial (para los demás casos) ==
+SYS@FREE> UPDATE t6.pedido SET estado = 'C' WHERE id_pedido IN (SELECT id_pedido FROM t6.c13_cambio);
+
+135277 rows updated.
+
+SYS@FREE> COMMIT;
+
+Commit complete.
+
+SYS@FREE> DROP TABLE t6.c13_cambio PURGE;
+
+Table dropped.
+
+SYS@FREE> EXEC DBMS_STATS.GATHER_TABLE_STATS('T6', 'PEDIDO', method_opt => 'FOR ALL COLUMNS SIZE 1', no_invalidate => FALSE)
+
+PL/SQL procedure successfully completed.
+
+SYS@FREE> SET ECHO OFF
+== Lo que debes retener ==
+1. Las estadísticas son configuración: se cambian con red (PUBLISH = FALSE, pendientes, prueba en sesión, publicar).
+2. Siempre hay vuelta atrás: DBMS_STATS.RESTORE_TABLE_STATS a un instante (DBA_TAB_STATS_HISTORY).
+3. LOCK_TABLE_STATS protege una tabla de trabajo de la tarea automática; ORA-20005 avisa a quien intente recoger.
+Se recoge igualmente con force => TRUE (decisión consciente, no un truco).

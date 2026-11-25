@@ -1,0 +1,36 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+PL/SQL procedure successfully completed.
+
+    REC_ID TYPE            BENEFIT       RANK
+---------- ------------ ---------- ----------
+         1 ACTIONS            1440          1
+
+1 row selected.
+
+Rem  SQL Access Advisor: Version 23.0.0.0.0 - Production
+Rem
+Rem  Username:        SYS
+Rem  Task:            T6_C21_SAA
+Rem  Execution date:  25/11/2026 14:27
+Rem
+
+CREATE INDEX "T6"."PEDIDO_IDX$$_00AF0000"
+    ON "T6"."PEDIDO"
+    ("CANAL","IMPORTE")
+    COMPUTE STATISTICS;
+
+1 row selected.
+
+PL/SQL procedure successfully completed.
+
+== Lo que debes retener ==
+1. SQL Tuning Advisor analiza UNA sentencia (estadísticas, rutas, estructura, perfil) y propone; el DBA decide.
+2. SQL Access Advisor mira una carga y propone índices o vistas materializadas, con su guion: no lo ejecuta.
+3. Aceptar un perfil o un índice sin entender la causa es tapar un síntoma: se valida con el plan real y la medida.
+4. Requieren Tuning Pack en Enterprise Edition (CONTROL_MANAGEMENT_PACK_ACCESS); en Free están disponibles.

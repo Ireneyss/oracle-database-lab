@@ -1,0 +1,113 @@
+
+==================== 1 · ASH: muestras de la web en los últimos 10 minutos, por acción, SQL y evento ====================
+[DBA] 
+[DBA] SYS> ALTER SESSION SET CONTAINER = FREEPDB1;
+[DBA] 
+[DBA] Session altered.
+[DBA] 
+[DBA] SYS> SET ECHO OFF
+[DBA] 
+[DBA] ACTION     SQL_ID        EVENTO                     MUESTRAS
+[DBA] ---------- ------------- ------------------------ ----------
+[DBA] C17_V1     0dbx7196jdajy ON CPU                          437
+[DBA] C17_V1     0dbx7196jdajy resmgr:cpu quantum              127
+[DBA] C17_V1     4hyvggxmf6usw resmgr:cpu quantum               97
+[DBA] C17_V1     4hyvggxmf6usw ON CPU                            1
+[DBA] 
+[DBA] 4 rows selected.
+[DBA] 
+
+==================== 2 · AWR: las sentencias con más tiempo en el intervalo 42 → 44 (deltas) ====================
+[DBA] 
+[DBA] SYS> ALTER SESSION SET CONTAINER = FREEPDB1;
+[DBA] 
+[DBA] Session altered.
+[DBA] 
+[DBA] SYS> SET ECHO OFF
+[DBA] 
+[DBA] SQL_ID         PLAN_HASH       EJEC        SEG  GETS_EJEC TEXTO
+[DBA] ------------- ---------- ---------- ---------- ---------- ------------------------------------------
+[DBA] 4hyvggxmf6usw          0          6      401.9    2412542 DECLARE fin TIMESTAMP := SYSTIMESTAMP + NU
+[DBA] 0dbx7196jdajy 2571571058       2852      347.1       5246 SELECT /*+ t6_cp_v1 */ COUNT(*), SUM(IMPOR
+[DBA] 2pkpuk0vd342z 1693763048          2        3.3          6 insert into wrh$_mvparameter (dbid, per_pd
+[DBA] am3f3fh34nt7m          0          1        2.7      52018 DECLARE s NUMBER; BEGIN s := DBMS_WORKLOAD
+[DBA] 
+[DBA] 4 rows selected.
+[DBA] 
+
+==================== 3 · ADDM del intervalo 42 → 44 (solo los hallazgos y las recomendaciones) ====================
+[DBA] Total database time was 420 seconds.
+[DBA] The average number of active sessions was 3.41.
+[DBA] Summary of Findings
+[DBA] 1  Top SQL Statements               3.16 | 92.5          1
+[DBA] 2  Resource Manager CPU Throttling  1.2 | 35.05          2
+[DBA] Finding 1: Top SQL Statements
+[DBA] Impact is 3.16 active sessions, 92.5% of total activity.
+[DBA]    Recommendation 1: SQL Tuning
+[DBA]       Run SQL Tuning Advisor on the SELECT statement with SQL_ID
+[DBA]       SQL statement with SQL_ID "0dbx7196jdajy" was executed 2852 times and
+[DBA] Finding 2: Resource Manager CPU Throttling
+[DBA] Impact is 1.2 active sessions, 35.05% of total activity.
+[DBA]    Recommendation 1: Database Configuration
+[DBA]    Recommendation 2: Database Configuration
+[DBA]       Impact is 1.2 active sessions, 35.05% of total activity.
+
+==================== 4 · El plan REAL del SQL que señalan ASH, AWR y ADDM: mira los predicados ====================
+[DBA] 
+[DBA] SYS> ALTER SESSION SET CONTAINER = FREEPDB1;
+[DBA] 
+[DBA] Session altered.
+[DBA] 
+[DBA] SYS> SET SERVEROUTPUT OFF LINESIZE 160
+[DBA] SYS> SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(
+[DBA]   2    (SELECT sql_id FROM v$sql WHERE sql_text LIKE 'SELECT /*+ t6_cp_v1 */%' AND ROWNUM = 1), NULL, 'TYPICAL -BYTES -NOTE -HINT_REPORT'));
+[DBA] 
+[DBA] PLAN_TABLE_OUTPUT
+[DBA] ------------------------------------------------------------------------------------------------------------------------------------------------------
+[DBA] SQL_ID  0dbx7196jdajy, child number 0
+[DBA] -------------------------------------
+[DBA] SELECT /*+ t6_cp_v1 */ COUNT(*), SUM(IMPORTE) FROM T6.PEDIDO WHERE
+[DBA] CODIGO_POSTAL = :B1
+[DBA] 
+[DBA] Plan hash value: 2571571058
+[DBA] 
+[DBA] ---------------------------------------------------------------------
+[DBA] | Id  | Operation          | Name   | Rows  | Cost (%CPU)| Time     |
+[DBA] ---------------------------------------------------------------------
+[DBA] |   0 | SELECT STATEMENT   |        |       |  1456 (100)|          |
+[DBA] |   1 |  SORT AGGREGATE    |        |     1 |            |          |
+[DBA] |*  2 |   TABLE ACCESS FULL| PEDIDO |    91 |  1456   (2)| 00:00:01 |
+[DBA] ---------------------------------------------------------------------
+[DBA] 
+[DBA] Predicate Information (identified by operation id):
+[DBA] ---------------------------------------------------
+[DBA] 
+[DBA]    2 - filter(TO_NUMBER("CODIGO_POSTAL")=:B1)
+[DBA] 
+[DBA] SQL_ID  0dbx7196jdajy, child number 1
+[DBA] -------------------------------------
+[DBA] SELECT /*+ t6_cp_v1 */ COUNT(*), SUM(IMPORTE) FROM T6.PEDIDO WHERE
+[DBA] CODIGO_POSTAL = :B1
+[DBA] 
+[DBA] Plan hash value: 2571571058
+[DBA] 
+[DBA] ---------------------------------------------------------------------
+[DBA] | Id  | Operation          | Name   | Rows  | Cost (%CPU)| Time     |
+[DBA] ---------------------------------------------------------------------
+[DBA] |   0 | SELECT STATEMENT   |        |       |  1456 (100)|          |
+[DBA] |   1 |  SORT AGGREGATE    |        |     1 |            |          |
+[DBA] |*  2 |   TABLE ACCESS FULL| PEDIDO |    91 |  1456   (2)| 00:00:01 |
+[DBA] ---------------------------------------------------------------------
+[DBA] 
+[DBA] Predicate Information (identified by operation id):
+[DBA] ---------------------------------------------------
+[DBA] 
+[DBA]    2 - filter(TO_NUMBER("CODIGO_POSTAL")=:B1)
+[DBA] 
+[DBA] 40 rows selected.
+[DBA] 
+[DBA] SYS> EXIT
+
+-- Lectura: TABLE ACCESS FULL con filter(TO_NUMBER("CODIGO_POSTAL")=:B1). La V1 pasa un NUMBER contra una columna
+
+-- VARCHAR2: Oracle convierte la COLUMNA en cada fila y el índice IX_T6_PED_CP no se puede usar (como en C07).

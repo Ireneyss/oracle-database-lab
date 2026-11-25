@@ -1,0 +1,33 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+== 1 · La sesión: cuántos análisis completos (hard parse) y cuánto tiempo de análisis ==
+
+MODO       LLAMADAS HARD_PARSES MS_ANALISIS PCT_TIEMPO_ANALIZANDO
+-------- ---------- ----------- ----------- ---------------------
+LITERAL        5000        5043        4100                    86
+
+1 row selected.
+
+== 2 · La firma: textos distintos que serían IGUALES con variables (FORCE_MATCHING_SIGNATURE) ==
+
+          FIRMA_FORCE SQL_IDS_DISTINTOS EJECUCIONES
+--------------------- ----------------- -----------
+ 14573098645096361820              1848        1848
+
+1 row selected.
+
+== 3 · El modelo de tiempo de la PDB: el análisis completo pesa en el DB time ==
+
+STAT_NAME                          SEGUNDOS
+-------------------------------- ----------
+DB time                              833.29
+parse time elapsed                     19.7
+hard parse elapsed time               18.36
+
+3 rows selected.
+
+-- Lectura: una firma con miles de SQL_ID ejecutados una vez = la aplicación no usa variables de enlace.

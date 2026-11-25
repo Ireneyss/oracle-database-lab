@@ -1,0 +1,13 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    Hay una línea base ACEPTADA y ACTIVA para el informe
+OK    El informe de la aplicación se ejecuta con la línea base
+OK    Y eso SIN tocar las estadísticas del martes (ESTADO sigue sin histograma: NONE)
+OK    Lecturas por ejecución con SPM: 198 frente a 5227 del plan del martes

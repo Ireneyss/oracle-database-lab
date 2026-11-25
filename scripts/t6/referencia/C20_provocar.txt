@@ -1,0 +1,18 @@
+
+==================== 1 · Activar la traza del módulo (con esperas) · t6 traza on tienda_web C20_ALTA ====================
+Session altered.
+PL/SQL procedure successfully completed.
+TRACE_TYPE	      PRIMARY_ID QUALIFIER_ID1	QUALIFIER_ID2  WAITS BINDS
+--------------------- ---------- -------------- -------------- ----- -----
+SERVICE_MODULE_ACTION freepdb1	 tienda_web	C20_ALTA       TRUE  FALSE
+
+==================== 2 · La aplicación trabaja 20 s (su archivo de traza se llamará *_C20.trc) ====================
+   carga C20_ALTA: 1 sesiones de la aplicación durante 20 s ...
+   carga C20_ALTA terminada
+
+==================== 3 · Desactivar la traza en cuanto termina (una traza olvidada llena el disco) · t6 traza off tienda_web C20_ALTA ====================
+Session altered.
+PL/SQL procedure successfully completed.
+'TRAZASACTIVAS:'||COUNT(*)
+--------------------------------------------------------
+trazas activas: 0

@@ -1,0 +1,55 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF SERVEROUTPUT OFF LINESIZE 170
+== 1 · El plan real del informe ==
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL_ID  ffmscb8dkfswk, child number 0
+-------------------------------------
+SELECT /*+ GATHER_PLAN_STATISTICS t6_c12_antes */ COUNT(*),
+SUM(p.importe)   FROM t6.carrito k JOIN t6.pedido p ON p.id_pedido =
+k.id_pedido
+
+Plan hash value: 3942147839
+
+--------------------------------------------------------------------------------------------------------
+| Id  | Operation                     | Name         | Starts | E-Rows | A-Rows |   A-Time   | Buffers |
+--------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT              |              |      1 |        |      1 |00:00:00.24 |     212K|
+|   1 |  SORT AGGREGATE               |              |      1 |      1 |      1 |00:00:00.24 |     212K|
+|   2 |   NESTED LOOPS                |              |      1 |    100 |    200K|00:00:00.33 |     212K|
+|   3 |    NESTED LOOPS               |              |      1 |    100 |    200K|00:00:00.15 |   11953 |
+|   4 |     TABLE ACCESS FULL         | CARRITO      |      1 |    100 |    200K|00:00:00.02 |     691 |
+|*  5 |     INDEX UNIQUE SCAN         | PK_T6_PEDIDO |    200K|      1 |    200K|00:00:00.06 |   11262 |
+|   6 |    TABLE ACCESS BY INDEX ROWID| PEDIDO       |    200K|      1 |    200K|00:00:00.08 |     200K|
+--------------------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   5 - access("P"."ID_PEDIDO"="K"."ID_PEDIDO")
+
+25 rows selected.
+
+== 2 · ¿Están obsoletas? Cambios desde la última recogida y la marca STALE ==
+
+PL/SQL procedure successfully completed.
+
+   INSERTS    UPDATES    DELETES
+---------- ---------- ----------
+    200000          0          0
+
+1 row selected.
+
+  NUM_ROWS LAST_ANALYZED       STALE STATT
+---------- ------------------- ----- -----
+       100 2026-11-25 14:20:20 YES
+
+1 row selected.
+
+-- Lectura: E-Rows 100 en CARRITO y A-Rows 200 100. Con 100 filas, bucles anidados por la PK de PEDIDO es lo
+-- lógico; con 200 100, son 200 100 visitas al índice y a la tabla. STALE = YES: la causa está confirmada.

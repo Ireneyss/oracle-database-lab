@@ -1,0 +1,63 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF SERVEROUTPUT OFF LINESIZE 170
+== 1 · El cursor de la pantalla: SQL_ID, plan y coste por ejecución ==
+
+SQL_ID        PLAN_HASH_VALUE EXECUTIONS  MS_EJEC  GETS_EJEC
+------------- --------------- ---------- -------- ----------
+0dbx7196jdajy      2571571058         40    80.33       5227
+
+1 row selected.
+
+== 2 · Su plan real, con los predicados ==
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL_ID  0dbx7196jdajy, child number 0
+-------------------------------------
+SELECT /*+ t6_cp_v1 */ COUNT(*), SUM(IMPORTE) FROM T6.PEDIDO WHERE
+CODIGO_POSTAL = :B1
+
+Plan hash value: 2571571058
+
+---------------------------------------------------------------------
+| Id  | Operation          | Name   | Rows  | Cost (%CPU)| Time     |
+---------------------------------------------------------------------
+|   0 | SELECT STATEMENT   |        |       |  1456 (100)|          |
+|   1 |  SORT AGGREGATE    |        |     1 |            |          |
+|*  2 |   TABLE ACCESS FULL| PEDIDO |    91 |  1456   (2)| 00:00:01 |
+---------------------------------------------------------------------
+
+Peeked Binds (identified by position):
+--------------------------------------
+
+   1 - :B1 (NUMBER): 30038
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   2 - filter(TO_NUMBER("CODIGO_POSTAL")=:B1)
+
+Hint Report (identified by operation id / Query Block Name / Object Alias):
+Total hints for statement: 1 (E - Syntax error (1))
+---------------------------------------------------------------------------
+
+   1 -  SEL$1
+         E -  t6_cp_v1
+
+SQL Analysis Report (identified by operation id/Query Block Name/Object Alias):
+-------------------------------------------------------------------------------
+
+   2 -  SEL$1 / "PEDIDO"@"SEL$1"
+           -  The following columns have predicates which preclude their
+              use as keys in index range scan. Consider rewriting the
+              predicates.
+                "CODIGO_POSTAL"
+
+41 rows selected.
+
+-- Lectura: filter(TO_NUMBER("CODIGO_POSTAL")=:B1). Oracle convierte la COLUMNA para compararla con un número:
+-- el índice sobre CODIGO_POSTAL (texto) ya no sirve y se recorre la tabla entera en cada búsqueda.

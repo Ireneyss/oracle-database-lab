@@ -1,0 +1,18 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET SERVEROUTPUT OFF
+SYS@FREE> ALTER SESSION SET workarea_size_policy = AUTO;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+Informe terminado en 946 ms, 4 MB escritos en TEMP
+
+1 row selected.
+

@@ -1,0 +1,24 @@
+# id	sección	estrella	carpeta	título	minutos	aviso
+C01	6.1	★	C01_pool-black-friday	Black Friday: más sesiones no es más rendimiento (cola de CPU y línea base)	20	provocar y solucionar lanzan carga unos 70 s
+C02	6.1	-	C02_commit-por-fila	La carga de pedidos espera en «log file sync» (commit por fila)	10
+C03	6.2	★	C03_literales-hard-parse	La web concatena literales: tormenta de análisis completos (hard parse)	20
+C04	6.2	★	C04_informe-temp	El informe mensual se desborda a TEMP (ordenar sin memoria)	20
+C05	6.2	-	C05_join-equivocado	Bucles anidados o hash join: el método depende de las filas	10
+C06	6.2	-	C06_funcion-por-fila	Una función PL/SQL llamada un millón de veces	10
+C07	6.3	★	C07_explain-miente	EXPLAIN PLAN dice índice; la ejecución real recorre la tabla	20
+C08	6.3	★	C08_e-rows-a-rows	El optimizador cree 3 filas y son 56 (E-Rows frente a A-Rows)	20
+C09	6.3	-	C09_rutas-acceso	Las rutas de acceso: del recorrido completo al único acceso por índice	10
+C10	6.3	-	C10_bind-peeking	El valor de la variable importa: bind peeking y cursores adaptativos	10
+C11	6.3	-	C11_plan-adaptativo	El plan cambia de método a mitad de la primera ejecución	10
+C12	6.4	★	C12_estadisticas-obsoletas	Tras la carga nocturna el plan se equivoca (estadísticas obsoletas e histograma)	20
+C13	6.4	★	C13_ciclo-estadisticas	Cambiar estadísticas con red: pendientes, publicar, restaurar y bloquear	20
+C14	6.4	★	C14_indice-invisible	Un índice nuevo sin riesgo: invisible, probar, publicar y medir su coste	20
+C15	6.4	-	C15_coste-escritura	Lo que cuesta cada índice al cargar datos	10
+C16	6.4	-	C16_indice-funcion	Buscar por UPPER(email): índice basado en función	10
+C17	6.5	★	C17_inc604-awr	INC-604 de principio a fin: AWR, ASH, ADDM y un solo cambio	30	provocar y validar lanzan carga unos 2 min cada uno
+C18	6.5	★	C18_spm	El plan bueno no se pierde: SQL Plan Management	20
+C19	6.5	-	C19_sql-monitor	SQL Monitor: dónde pasa el tiempo un informe largo	10
+C20	6.5	-	C20_traza-tkprof	Trazar un módulo de la aplicación y leerlo con tkprof	10
+C21	6.5	-	C21_tuning-advisor	SQL Tuning Advisor: lo que propone y lo que hay que decidir	10
+C22	6.5	-	C22_asesores-memoria	Dimensionar SGA y PGA con los asesores	10
+C23	6.5	-	C23_inventario-indices	Antes de crear un índice: inventario, redundancia y uso	10

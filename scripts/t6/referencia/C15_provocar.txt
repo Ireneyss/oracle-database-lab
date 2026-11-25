@@ -1,0 +1,18 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+PL/SQL procedure successfully completed.
+
+Table created.
+
+Table created.
+
+== Carga de 100 000 pedidos SIN índices (la referencia) ==
+SIN_INDICES    índices=0   50 ms   redo 4.4 MB
+== Los seis índices que se fueron añadiendo con los años ==
+== La carga de cada noche, con los seis ==
+SEIS_INDICES   índices=6   1650 ms   redo 99.4 MB

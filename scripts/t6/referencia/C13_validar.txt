@@ -1,0 +1,13 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF SERVEROUTPUT OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    Estimación de pedidos E: 185277 (reales 185277)
+OK    ESTADO tiene histograma FREQUENCY
+OK    No quedan estadísticas pendientes sin publicar
+OK    La preferencia PUBLISH ha vuelto a TRUE

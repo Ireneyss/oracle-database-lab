@@ -1,0 +1,39 @@
+== EVIDENCIA alumno=E066 hora=2026-11-25T19:57:06Z origen=t6/salud
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-25T19:52:10 scn=7359404
+== 1 · Carga frente a capacidad: AAS por minuto (V$CON_SYSMETRIC_HISTORY) y CPU_COUNT ==
+
+MINUT        AAS
+----- ----------
+19:53          0
+19:54          0
+19:55        .15
+19:56          0
+
+SEMAFORO
+----------------------------------------------------------------------------------------------------
+VERDE    AAS máximo .2 con CPU_COUNT 2: hay holgura
+== 2 · En qué se va el tiempo (ASH, muestras de 1 s de sesiones activas de esta PDB) ==
+
+WAIT_CLASS     EVENTO                                     MUESTRAS    PCT
+-------------- ---------------------------------------- ---------- ------
+CPU            ON CPU                                           19   73.1
+User I/O       direct path write                                 5   19.2
+User I/O       Data file init write                              2    7.7
+== 3 · Quién lo consume: SQL_ID y módulo con más muestras ==
+
+SQL_ID        MODULE           ACTION           MUESTRAS    PCT TEXTO
+------------- ---------------- -------------- ---------- ------ --------------------------------------------
+5227ykzxr46kh sqlplus@8b68d5c7                         2    7.7
+              389b (TNS V1-V3)
+
+gw788nxk7vbwg AQ               QMON Slave              2    7.7 SELECT VALUE FROM SYS.V_$PARAMETER WHERE CON
+gv5ak281vfvsa sqlplus@8b68d5c7                         2    7.7
+              389b (TNS V1-V3)
+
+3g1848kc8ku6r sqlplus@8b68d5c7                         2    7.7
+              389b (TNS V1-V3)
+
+2dt1vq42sjjv9 sqlplus@8b68d5c7                         2    7.7
+              389b (TNS V1-V3)
+
+-- Siguiente paso: con el SQL_ID de arriba, «t6 plan SQL_ID» (playbook PB-2). Con esperas de una sola clase, PB-1 rama 2.

@@ -1,0 +1,21 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+COLUMN_NAME    HID VIR NUM_DISTINCT
+-------------- --- --- ------------
+SYS_NC00011$   YES YES        99960
+EMAIL          NO  NO         99328
+
+2 rows selected.
+
+== Lo que debes retener ==
+1. Una función sobre la columna (UPPER, TRUNC, TO_CHAR, NVL...) anula el índice normal de esa columna.
+2. El índice basado en función indexa la EXPRESIÓN; la consulta debe escribirla igual: UPPER(email).
+3. Oracle crea una columna virtual oculta (SYS_NC...): recoge sus estadísticas (FOR ALL HIDDEN COLUMNS).
+4. Variante de examen: TRUNC(fecha_pedido) = DATE '2026-11-01' tampoco usa IX_T6_PED_FECHA. Mejor que un índice
+nuevo: reescribir como rango, fecha_pedido >= DATE '2026-11-01' AND fecha_pedido < DATE '2026-11-02'.
+5. Pariente de C07: allí la función la ponía Oracle (TO_NUMBER implícito); aquí la escribe la aplicación.

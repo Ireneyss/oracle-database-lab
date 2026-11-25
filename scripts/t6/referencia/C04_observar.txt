@@ -1,0 +1,28 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+MODO           POLITICA        FILAS         MS TEMP_ESCRITOS TEMP_LEIDOS
+-------------- ---------- ---------- ---------- ------------- -----------
+LEGADO         MANUAL        1000000       1230          5456        5456
+AUTO_COMPLETO  AUTO          1000000        950             0           0
+AUTO_TOP100    AUTO              100        110             0           0
+
+3 rows selected.
+
+ETIQUETA   OPERATION_TYPE   MB_OPTIMO LAST_EXECU    OPTIMAS UNA_PASADA     VARIAS
+---------- ---------------- --------- ---------- ---------- ---------- ----------
+top100     SORT (v2)              0.0 OPTIMAL             1          0          0
+completo   SORT (v2)             48.0 1 PASS              0          1          0
+completo   SORT (v2)             63.7 OPTIMAL             1          0          0
+
+3 rows selected.
+
+== Lo que debes retener ==
+1. Ordenar, agrupar y los hash join usan un área de trabajo en la PGA: OPTIMAL, ONE PASS o MULTI-PASS.
+2. Antes de dar más memoria, busca quién la limita (política MANUAL heredada, PGA_AGGREGATE_TARGET de la PDB).
+3. Reducir antes de ordenar vale más que ordenar mejor: un TOP-N (SORT ORDER BY STOPKEY) necesita KB, no MB.
+4. Variante de examen: «TEMP se llena»: V$TEMPSEG_USAGE dice quién; V$SQL_WORKAREA_ACTIVE, qué operación.

@@ -1,0 +1,40 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+ETQ         BUSQUEDAS  MS_P50  MS_P95
+---------- ---------- ------- -------
+C07_V1             40    74.1   110.2
+
+1 row selected.
+
+== Lo que enseña desarrollo: EXPLAIN PLAN de «la misma» consulta, con una variable ==
+
+PL/SQL procedure successfully completed.
+
+Explained.
+
+PLAN_TABLE_OUTPUT
+----------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 2982358210
+
+----------------------------------------------------------------------------------
+| Id  | Operation                            | Name         | Rows  | Cost (%CPU)|
+----------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                     |              |     1 |    94   (0)|
+|   1 |  SORT AGGREGATE                      |              |     1 |            |
+|   2 |   TABLE ACCESS BY INDEX ROWID BATCHED| PEDIDO       |    91 |    94   (0)|
+|*  3 |    INDEX RANGE SCAN                  | IX_T6_PED_CP |    91 |     3   (0)|
+----------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   3 - access("CODIGO_POSTAL"=:CP)
+
+15 rows selected.
+
+-- Lectura: EXPLAIN PLAN no ejecuta ni mira el TIPO de la variable (la trata como texto): predice el índice.

@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
-"""scripts/ops/autoria.py — comprobaciones de uso de IA y autoría del Lab 6 (las mismas que aplica el docente).
+"""scripts/ops/autoria.py — comprobaciones de uso de IA y autoría de los Labs 6 y 7 (las mismas que aplica el docente).
 
 Reglas fijas de la política de uso de IA (sin interpretación):
-  D1  falta docs/bitacora/lab6-ia.md, o no declara nada                                −0,5
+  D1  falta docs/bitacora/labN-ia.md, o no declara nada                                −0,5
   D2  una IA hizo commits: coautor o firma de IA en los commits del laboratorio,
       o archivos de agente en el repositorio (.claude/, CLAUDE.md, AGENTS.md, .cursor/…)  el mayor entre 35 % y 3 puntos
-  D3  entrada de lab6-ia.md con algún campo obligatorio vacío                                 −0,5 por entrada
+  D3  entrada de labN-ia.md con algún campo obligatorio vacío                                 −0,5 por entrada
   D5  marca de texto generado en las respuestas (contentReference, oaicite,
       utm_source=chatgpt.com, utm_source=gemini)                                         NR y −0,5 por pregunta
   D6  evidencia sin cabecera, con otro código de alumno o de otra base de datos (DBID)    NR y −1 por evidencia
       (la comparación con la hora del commit y con otros alumnos la hace el docente)
 
-Uso:  python3 scripts/ops/autoria.py [--repo .] [--alumno E0NN] [--desde lab5-final] [--ia docs/bitacora/lab6-ia.md]
-Lo ejecuta scripts/lab6/09-verificacion-final.sh. Sale con el número de problemas encontrados.
+Uso:  python3 scripts/ops/autoria.py [--lab 7] [--repo .] [--alumno E0NN] [--desde lab6-final] [--ia docs/bitacora/lab7-ia.md]
+      --lab fija los valores por defecto de ese laboratorio (6 si no se indica: compatible con el Lab 6).
+Lo ejecutan scripts/lab6/09-verificacion-final.sh y scripts/lab7/09-verificacion-final.sh.
+Sale con el número de problemas encontrados.
 """
 import argparse
 import os
@@ -178,22 +180,28 @@ def cabeceras(texto):
 
 
 def evidencias(repo, carpeta='docs/bitacora/lab6/evidencia'):
+    """Lab 6: subcarpetas script/ y spool/. Lab 7 en adelante: todas (casos/, herramientas/, incidentes/...), salvo config/."""
     base = os.path.join(repo, carpeta)
     res = []
-    for sub in ('script', 'spool'):
+    if carpeta.endswith('lab6/evidencia'):
+        subs = ('script', 'spool')
+    else:
+        subs = sorted(x for x in os.listdir(base) if os.path.isdir(os.path.join(base, x)) and x != 'config') if os.path.isdir(base) else ()
+    for sub in subs:
         d = os.path.join(base, sub)
         if not os.path.isdir(d):
             continue
-        for nombre in sorted(os.listdir(d)):
-            ruta = os.path.join(d, nombre)
-            if os.path.isfile(ruta):
-                res.append((os.path.relpath(ruta, repo), cabeceras(leer(ruta))))
+        for raiz, _, nombres in os.walk(d):
+            for nombre in sorted(nombres):
+                ruta = os.path.join(raiz, nombre)
+                if os.path.isfile(ruta):
+                    res.append((os.path.relpath(ruta, repo), cabeceras(leer(ruta))))
     return res
 
 
-def problemas_evidencias(repo, alumno):
+def problemas_evidencias(repo, alumno, carpeta='docs/bitacora/lab6/evidencia'):
     """D6 que se puede comprobar en el propio repositorio: sin cabecera, otro código, otra base (DBID)."""
-    lista = evidencias(repo)
+    lista = evidencias(repo, carpeta)
     dbids = {}
     for ruta, cabs in lista:
         for c in cabs:
@@ -217,11 +225,16 @@ def problemas_evidencias(repo, alumno):
 # ------------------------------------------------------------------------------------------------- CLI
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument('--lab', type=int, default=6, help='número de laboratorio (6, 7...): fija los valores por defecto')
     ap.add_argument('--repo', default='.')
     ap.add_argument('--alumno', default=os.environ.get('ESTUDIANTE', ''))
-    ap.add_argument('--desde', default='lab5-final', help='tag o commit donde empieza el laboratorio')
-    ap.add_argument('--ia', default=ARCHIVO_IA, help='archivo de declaración de uso de IA')
+    ap.add_argument('--desde', default=None, help='tag o commit donde empieza el laboratorio (por defecto, lab<N-1>-final)')
+    ap.add_argument('--ia', default=None, help='archivo de declaración de uso de IA (por defecto, docs/bitacora/lab<N>-ia.md)')
     a = ap.parse_args()
+    a.desde = a.desde or f'lab{a.lab - 1}-final'
+    a.ia = a.ia or f'docs/bitacora/lab{a.lab}-ia.md'
+    respuestas = f'docs/bitacora/lab{a.lab}-respuestas.md'
+    carpeta_ev = f'docs/bitacora/lab{a.lab}/evidencia'
     fallos = 0
 
     def ok(t):
@@ -276,16 +289,16 @@ def main():
     else:
         ok(f'ningún commit con firma o coautor de IA ({rango_commits(a.repo, a.desde)})')
 
-    marcas = marcas_respuestas(a.repo)
+    marcas = marcas_respuestas(a.repo, respuestas)
     if marcas:
         for preg, marca in marcas:
             fallo(f'marca de texto generado «{marca}» en las respuestas ({preg})', 'D5 (NR y −0,5 por pregunta)')
     else:
         ok('respuestas sin marcas de texto generado')
 
-    lista, probl = problemas_evidencias(a.repo, a.alumno)
+    lista, probl = problemas_evidencias(a.repo, a.alumno, carpeta_ev)
     if not lista:
-        fallo('no hay evidencias en docs/bitacora/lab6/evidencia', 'Partes A a I')
+        fallo(f'no hay evidencias en {carpeta_ev}', 'las partes del laboratorio')
     elif probl:
         for ruta, motivo in probl[:15]:
             fallo(f'{ruta}: {motivo}', 'D6: vuelve a generar esa evidencia en tu entorno')

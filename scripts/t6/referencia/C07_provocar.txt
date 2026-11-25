@@ -1,0 +1,12 @@
+[APP] 
+[APP] T6_APP> SET ECHO OFF
+[APP] 
+[APP] PL/SQL procedure successfully completed.
+[APP] 
+[APP] RESULTADO
+[APP] --------------------------------------------------------------------------------------------------------------
+[APP] Búsquedas hechas: 1
+[APP] 
+[APP] 1 row selected.
+[APP] 
+Búsquedas registradas por la web (C07_V1): 40

@@ -1,0 +1,54 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF SERVEROUTPUT OFF
+
+Explained.
+
+PLAN_TABLE_OUTPUT
+----------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 3277087581
+
+--------------------------------------------
+| Id  | Operation         | Name   | Rows  |
+--------------------------------------------
+|   0 | SELECT STATEMENT  |        | 50000 |
+|*  1 |  TABLE ACCESS FULL| PEDIDO | 50000 |
+--------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   1 - filter(SYS_EXTRACT_UTC(INTERNAL_FUNCTION("FECHA_PEDIDO"))>=SYS_EX
+              TRACT_UTC(SYSTIMESTAMP(6)-INTERVAL'+01 00:00:00' DAY(2) TO SECOND(0)))
+
+14 rows selected.
+
+Explained.
+
+PLAN_TABLE_OUTPUT
+----------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 1647824542
+
+-----------------------------------------------------------------------
+| Id  | Operation                           | Name            | Rows  |
+-----------------------------------------------------------------------
+|   0 | SELECT STATEMENT                    |                 |   368 |
+|   1 |  TABLE ACCESS BY INDEX ROWID BATCHED| PEDIDO          |   368 |
+|*  2 |   INDEX RANGE SCAN                  | IX_T6_PED_FECHA |   368 |
+-----------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   2 - access("FECHA_PEDIDO">=SYSDATE@!-1)
+
+14 rows selected.
+
+== Lo que debes retener ==
+1. EXPLAIN PLAN predice (no ejecuta, no conoce el tipo ni el valor de la variable). DISPLAY_CURSOR cuenta lo que pasó.
+2. Un TO_NUMBER, TO_CHAR o INTERNAL_FUNCTION sobre la COLUMNA en «Predicate Information» = el índice no sirve.
+3. La cura es el tipo correcto en la aplicación (un solo cambio). Un índice basado en función sería tapar el defecto.
+4. Con la herramienta del kit: t6 top 5 elapsed t6_cp  →  t6 plan SQL_ID   (playbook PB-2).

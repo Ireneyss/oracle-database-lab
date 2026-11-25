@@ -1,0 +1,12 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    La carga por lotes tarda 290 ms frente a 5680 ms por fila
+OK    Esperas «log file sync»: de 20000 a 20
+OK    Las dos cargas guardaron sus 20 000 filas (no se pierde nada)

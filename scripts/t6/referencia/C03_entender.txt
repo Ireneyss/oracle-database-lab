@@ -1,0 +1,30 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+== 1 · Lo que costó cada ficha (una consulta por clave primaria debería costar décimas de milisegundo) ==
+
+MODO       LLAMADAS   MS_TOTAL     CPU_MS MS_POR_FICHA
+-------- ---------- ---------- ---------- ------------
+LITERAL        5000       4790       4700         .958
+
+1 row selected.
+
+== 2 · Lo que ha dejado en la shared pool: un cursor por cada valor distinto ==
+
+  CURSORES EJECUCIONES KB_SHARED_POOL
+---------- ----------- --------------
+      1853        1853          49196
+
+1 row selected.
+
+SQL_ID        EXECUTIONS SQL_TEXT
+------------- ---------- ------------------------------------------------------------------------------------------
+cfp5r1dxq405w          1 SELECT /* t6_ficha */ nombre, ciudad FROM t6.cliente WHERE id_cliente = 56881
+37w78jj4hh08k          1 SELECT /* t6_ficha */ nombre, ciudad FROM t6.cliente WHERE id_cliente = 52441
+5quu1bfwzh0bt          1 SELECT /* t6_ficha */ nombre, ciudad FROM t6.cliente WHERE id_cliente = 24025
+
+3 rows selected.
+

@@ -1,0 +1,16 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+ETQ               INDICES         MS    REDO_MB VECES_MAS_LENTA
+-------------- ---------- ---------- ---------- ---------------
+SIN_INDICES             0         50        4.4               1
+SEIS_INDICES            6       1650       99.4              33
+
+2 rows selected.
+
+-- Lectura: el INSERT es el mismo; lo que cambia es que cada fila se escribe en la tabla y en seis árboles B.
+-- Cada índice añade lecturas de bloque, redo y undo. En la consulta ayudan; en la carga solo cuestan.

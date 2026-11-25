@@ -1,0 +1,12 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    Con 2 sesiones se atiende lo mismo que con 8: 8.4 frente a 8.9 llamadas/s
+OK    La latencia p95 baja de 1330 ms a 322 ms (menos cola)
+OK    Línea base del panel registrada en T6.LINEA_BASE (caso C01)

@@ -1,0 +1,8 @@
+
+SYS@FREE> SET ECHO OFF
+== Lo que debes retener ==
+1. La memoria es de la instancia: los asesores se leen en la raíz (CDB$ROOT); una PDB solo puede limitar su parte.
+2. SGA: V$SGA_TARGET_ADVICE (factor de DB time). Buffer cache: V$DB_CACHE_ADVICE. PGA: V$PGA_TARGET_ADVICE.
+3. Se elige el punto donde la curva se aplana: más memoria a partir de ahí no da nada (rendimientos decrecientes).
+4. Una foto no basta: se miran semanas de AWR (DBA_HIST_*_ADVICE y DBA_HIST_PGASTAT) en horas punta.
+5. Variante de examen: «sube pga_aggregate_target y no mejora»: una sesión en MANUAL (caso C04) o un trigger de logon.
