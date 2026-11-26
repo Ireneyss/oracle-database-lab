@@ -29,11 +29,31 @@ Evidencia: `casos/20261126T081707Z_C01_observar.txt`.
 
 ## Parte C · C03 · Literales y análisis completos
 1. Análisis completos y tiempo con literales, con variables de enlace y con CURSOR_SHARING = FORCE (tus cifras).
+
+Con literales, las 5.000 fichas tardaron 5.090 ms (1,02 ms cada una) e hicieron 5.074 hard parses, prácticamente uno por ficha. El 87 % del tiempo se fue en analizar (4.410 ms), no en leer la fila. Con variables de enlace bajó a 170 ms y 31 hard parses, unas 30 veces más rápido, y en la shared pool quedó un solo cursor. Con CURSOR_SHARING = FORCE y la misma versión de literales tardó 200 ms con 28 hard parses: casi como con variables. Un detalle de mi base: al acabar la carga con literales solo quedaban 538 cursores de los 5.074 y unos segundos después ninguno, porque Oracle los iba expulsando de la shared pool al no reutilizarse.
+
+Evidencia: `casos/20261126T083553Z_C03_diagnosticar.txt`, `casos/20261126T083626Z_C03_validar.txt` y `casos/20261126T083738Z_C03_observar.txt`.
+
 2. ¿Por qué FORCE es un puente y no la solución? ¿Qué ve el DBA en V$SQL que lo delata (FORCE_MATCHING_SIGNATURE)?
+
+Es un puente porque arregla el síntoma sin tocar la causa: la aplicación sigue concatenando el id, y si se quita el parámetro vuelve el problema. Además cambia todos los literales de la sesión, servicio o PDB, también los que se ponen a propósito para que el optimizador vea el valor y elija el plan, así que puede estropear otras consultas. Lo bueno es que deja rastro: en V$SQL vi un solo cursor (bba34k3qhx6j7) con 5.000 ejecuciones y el texto WHERE id_cliente = :"SYS_B_0", una variable que no escribió nadie. Sin el parche, lo que delata a la aplicación son miles de SQL_ID con una sola ejecución que comparten la misma FORCE_MATCHING_SIGNATURE. En mi caso la firma salió vacía en el diagnóstico porque los cursores ya se habían expulsado, pero los 5.074 hard parses para 5.000 llamadas dicen lo mismo.
+
+Evidencia: `casos/20261126T083738Z_C03_observar.txt` y `casos/20261126T083553Z_C03_diagnosticar.txt`.
+
 
 ## Parte C · C04 · El informe que se desborda a TEMP
 1. Bloques de TEMP, tipo de pasada y tiempo del informe antes y después. ¿Qué hacía el disparador de logon?
+
+Antes, el ranking completo de 1.000.000 de pedidos tardaba 1.560 ms y escribía y leía 5.456 bloques en TEMP (42,6 MB). La ordenación necesitaba 48 MB pero solo pudo usar 1.016 KB, así que dio una pasada por disco (1 PASS) con 43 MB de TEMP. El culpable era el disparador T6.C04_LEGADO, AFTER LOGON sobre la cuenta T6_INF: en cada inicio de sesión ponía workarea_size_policy = MANUAL y sort_area_size = 1 MB, así que la sesión ignoraba la PGA automática aunque la instancia permitía hasta 100 MB por área de trabajo. Después de borrar el disparador, el mismo informe completo bajó a 810 ms, con 0 bloques de TEMP y en memoria (OPTIMAL, 63,7 MB). Y pidiendo solo las 100 filas que se ven en pantalla, 90 ms y 0 bloques.
+
+Evidencia: `casos/20261126T091530Z_C04_diagnosticar.txt`, `casos/20261126T091653Z_C04_solucionar.txt` y `casos/20261126T091654Z_C04_validar.txt`.
+
 2. ¿Por qué el TOP 100 cabe en memoria y el informe completo no?
+
+Porque para devolver el informe completo hay que ordenar el millón de filas entero antes de dar la primera: la ordenación es bloqueante y necesita tener todo en el área de trabajo (en mi caso, entre 48 y 64 MB). Con FETCH FIRST 100 ROWS ONLY Oracle hace un TOP-N (SORT ORDER BY STOPKEY): va recorriendo los pedidos y solo se queda con los 100 de más importe, descartando el resto sobre la marcha. Por eso necesitó prácticamente 0 MB (unos pocos KB) y fue OPTIMAL. Me quedo con la idea de que reducir antes de ordenar vale más que ordenar con más memoria: 90 ms frente a los 810 ms del completo ya sin disparador.
+
+Evidencia: `casos/20261126T091806Z_C04_observar.txt` y `casos/20261126T091653Z_C04_solucionar.txt`.
+
 
 ## Parte D · C07 · EXPLAIN PLAN frente al plan real
 1. Copia el predicado que delata el problema en el plan real y explica de dónde sale.

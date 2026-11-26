@@ -1,0 +1,26 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T08:32:59Z origen=t6/C03_entender
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7399990
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+== 1 · Lo que costó cada ficha (una consulta por clave primaria debería costar décimas de milisegundo) ==
+
+MODO       LLAMADAS   MS_TOTAL     CPU_MS MS_POR_FICHA
+-------- ---------- ---------- ---------- ------------
+LITERAL        5000       5090       5160        1.018
+
+1 row selected.
+
+== 2 · Lo que ha dejado en la shared pool: un cursor por cada valor distinto ==
+
+  CURSORES EJECUCIONES KB_SHARED_POOL
+---------- ----------- --------------
+         0
+
+1 row selected.
+
+no rows selected
+
