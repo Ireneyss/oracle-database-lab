@@ -19,16 +19,22 @@ CÓMO SE RELLENA (léelo y borra este comentario si quieres; el script de evalua
 -->
 
 ## Entrada 1
-- **Herramienta:** 
+- **Herramienta:** Claude
 - **Prompt (literal, copiado tal cual):**
 ```text
-
+he cerrado sin querer la terminal
 ```
 - **Código recibido (el fragmento, o la ruta del archivo donde está):**
-```sql
-
+```bash
+cd ~/oracle-database-lab
+source scripts/deployment/env/00-config.sh
+ESTUDIANTE=$(grep -o 'E[0-9]\{3\}' config/.env)
+ls docs/bitacora/*.save 2>/dev/null || echo "Sin copias de emergencia"
+grep -n "^## Entrada\|PENDIENTE\|No he usado" docs/bitacora/lab7-ia.md
+grep -n "^Con 1 sesión\|^Evidencia" docs/bitacora/lab7-respuestas.md | head -5
 ```
-- **Dónde lo usé (parte, script o pregunta):** 
-- **Propósito (para qué lo necesitaba):** 
-- **Qué hace (con mis palabras; línea a línea si es SQL corto):** 
-- **Evidencia de ejecución (archivo de docs/bitacora/lab7/evidencia con mi cabecera):** 
+- **Dónde lo usé (parte, script o pregunta):** Parte B, al cerrar sin querer la terminal mientras pegaba las respuestas de C01
+- **Propósito (para qué lo necesitaba):** recuperar el entorno de trabajo y comprobar que no había perdido nada de lo que estaba editando
+- **Qué hace (con mis palabras; línea a línea si es SQL corto):** las tres primeras líneas rehacen lo que se pierde al cerrar una terminal: vuelvo al repositorio, cargo la configuración del laboratorio y vuelvo a poner mi código de alumno en la variable ESTUDIANTE. Docker y la base no se ven afectados, porque no dependen de la ventana. El ls busca archivos .save, que son las copias de emergencia que deja nano cuando se cierra con cambios sin guardar. Los dos grep comprueban qué entradas tiene la bitácora de IA y si las respuestas de C01 se habían guardado con sus líneas de evidencia.
+- **Evidencia de ejecución (archivo de docs/bitacora/lab7/evidencia con mi cabecera):** docs/bitacora/lab7/evidencia/herramientas/NOMBRE_DEL_PASO_1
+
