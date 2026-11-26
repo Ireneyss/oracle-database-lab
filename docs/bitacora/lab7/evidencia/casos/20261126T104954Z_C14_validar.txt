@@ -1,0 +1,14 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T10:49:54Z origen=t6/C14_validar
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7415415
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    El índice IX_T6_C14_PEND existe, VISIBLE y VALID
+OK    El panel publicado usa el índice nuevo
+OK    Lecturas lógicas por apertura: 118 frente a 5266

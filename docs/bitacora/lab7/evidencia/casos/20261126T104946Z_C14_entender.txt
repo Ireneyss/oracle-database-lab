@@ -1,0 +1,20 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T10:49:46Z origen=t6/C14_entender
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7414902
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+MEDIDA                                             VALOR
+-------------------------------------------------- --------------------
+Pedidos que muestra el panel                       2056
+Pedidos que hay en la tabla                        1000000
+Lecturas lógicas por apertura del panel            5266
+Milisegundos por apertura                          25.6
+
+4 rows selected.
+
+-- Lectura: el panel enseña unos 2 000 pedidos (el 0,2 %) y para ello lee la tabla entera. 30 aperturas por hora son
+-- 30 recorridos completos de un millón de filas. La petición del jefe del call center: «que vaya instantáneo».

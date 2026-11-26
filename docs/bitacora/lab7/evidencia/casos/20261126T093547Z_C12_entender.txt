@@ -1,0 +1,17 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T09:35:47Z origen=t6/C12_entender
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7407086
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+FUENTE                                FILAS LAST_ANALYZED
+-------------------------------- ---------- -------------------
+CARRITO según las estadísticas          100 2026-11-26 09:35:45
+CARRITO de verdad                    200100
+
+2 rows selected.
+
+-- Lectura: el optimizador decide con lo que CREE que hay. 100 filas frente a 200 100: un error de 2 000 veces.

@@ -1,0 +1,14 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T09:35:51Z origen=t6/C12_validar
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7407725
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    Estadísticas de CARRITO al día: 200100 filas (reales 200100), STALE = NO
+OK    Lecturas lógicas del informe: 5907 frente a 212196
+OK    El informe usa ahora HASH JOIN

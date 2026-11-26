@@ -85,15 +85,42 @@ Evidencia: `casos/20261126T092611Z_C08_entender.txt` y `casos/20261126T093028Z_C
 
 ## Parte E · C12 · Estadísticas obsoletas
 1. Filas según las estadísticas y reales; método de unión y lecturas antes y después.
+
+Según las estadísticas, CARRITO tenía 100 filas y en realidad había 200.100, porque la carga nocturna metió 200.000 y nadie recogió al terminar (STALE = YES y 200.000 inserciones en DBA_TAB_MODIFICATIONS). Con esa estimación el optimizador eligió NESTED LOOPS: E-Rows 100 en CARRITO, pero salieron 200.000, así que hizo 200.000 búsquedas por la PK de PEDIDO y 200.000 accesos a la tabla, 212.196 lecturas lógicas en total. Después de recoger solo CARRITO con GATHER_TABLE_STATS y no_invalidate => FALSE, las estadísticas quedaron en 200.100 filas y STALE = NO, el plan pasó a HASH JOIN con un solo recorrido de PEDIDO y CARRITO, y el informe bajó a 5.907 lecturas, unas 36 veces menos. En tiempo la diferencia fue pequeña en mi equipo (177 ms frente a unos 150 ms) porque todo estaba en caché, pero el trabajo real cayó muchísimo.
+
+Evidencia: `casos/20261126T093547Z_C12_entender.txt`, `casos/20261126T093548Z_C12_diagnosticar.txt`, `casos/20261126T093549Z_C12_solucionar.txt` y `casos/20261126T093550Z_C12_validar.txt`.
+
 2. ¿Por qué la tarea automática no lo habría arreglado a tiempo? ¿Quién debe recoger y cuándo?
+
+La tarea automática (auto optimizer stats collection, ENABLED) solo recoge dentro de las ventanas de mantenimiento, por la noche (en mi base, THURSDAY_WINDOW a las 22:00 durante 4 horas), y solo las tablas que han cambiado más de un 10 % (STALE_PERCENT). Si la carga termina después de la ventana, el informe de primera hora llega antes que la tarea y se ejecuta con las estadísticas viejas. En mi caso además se ve que WEDNESDAY_WINDOW se quedó en 25-11 a las 22:00 porque esa noche tenía el contenedor apagado, así que la tarea ni se ejecutó. Quien debe recoger es el propio proceso que carga: al terminar la carga, un GATHER_TABLE_STATS de la tabla que ha cambiado, como dice el runbook RB-2.
+
+Evidencia: `casos/20261126T093820Z_C12_observar.txt`.
 
 ## Parte E · C13 · El ciclo de estadísticas con red
 1. Describe el ciclo que seguiste (pendientes, probar, publicar, restaurar, bloquear) con la vista que comprueba cada paso.
+
+Partí de STALE = YES con 135.277 actualizaciones y ESTADO sin histograma, así que el optimizador estimaba 250.000 pedidos E (un millón entre 4 estados) y había 185.277. Primero puse PUBLISH = FALSE y recogí con histograma en ESTADO: en DBA_TAB_PENDING_STATS apareció la fila pendiente (09:45:23) mientras DBA_TAB_STATISTICS seguía con las publicadas de antes. Luego las probé solo en mi sesión con optimizer_use_pending_statistics = TRUE y un EXPLAIN PLAN: en PLAN_TABLE la estimación salió 185.277, igual que las reales. Como era buena, publiqué con PUBLISH_PENDING_STATS y devolví PUBLISH a TRUE: DBA_TAB_STATISTICS pasó a STALE = NO, DBA_TAB_PENDING_STATS quedó vacía y ESTADO tiene histograma FREQUENCY. Para restaurar, DBA_TAB_STATS_HISTORY guarda las recogidas anteriores (31 días de retención) y con RESTORE_TABLE_STATS a hace 60 segundos ESTADO volvió a NONE en DBA_TAB_COL_STATISTICS. Por último bloqueé con LOCK_TABLE_STATS y DBA_TAB_STATISTICS mostró STATTYPE_LOCKED = ALL.
+
+Evidencia: `casos/20261126T094455Z_C13_diagnosticar.txt`, `casos/20261126T094527Z_C13_solucionar.txt`, `casos/20261126T094528Z_C13_validar.txt` y `casos/20261126T094615Z_C13_observar.txt`.
+
 2. ¿Qué error obtuviste al recoger sobre estadísticas bloqueadas y cómo se recoge si de verdad hace falta?
+
+Al lanzar GATHER_TABLE_STATS sobre PEDIDO con las estadísticas bloqueadas salió ORA-20005: object statistics are locked (stattype = ALL). Es lo que se busca al bloquear una tabla de trabajo que se vacía y se llena: que ni la tarea automática ni nadie le cambie unas estadísticas representativas sin querer. Si de verdad hace falta recoger, hay dos formas conscientes: llamar a GATHER_TABLE_STATS con force => TRUE, o desbloquear con UNLOCK_TABLE_STATS, recoger y volver a bloquear con LOCK_TABLE_STATS. En el caso se desbloqueó con UNLOCK_TABLE_STATS antes de dejar PEDIDO como estaba.
+
+Evidencia: `casos/20261126T094615Z_C13_observar.txt`.
 
 ## Parte E · C14 · El índice invisible
 1. Lecturas por apertura del panel antes y después. ¿Cómo probaste el índice sin que lo viera nadie más?
+
+Antes, cada apertura del panel hacía 5.266 lecturas lógicas y tardaba 25,6 ms, porque recorría la tabla entera (TABLE ACCESS FULL) para mostrar solo 2.056 pedidos de un millón. Ninguno de los índices de PEDIDO combinaba estado, canal y fecha. Creé el índice (estado, canal, fecha_pedido) con las igualdades primero y el rango al final, como INVISIBLE y ONLINE: en una sesión normal el EXPLAIN PLAN seguía dando TABLE ACCESS FULL, así que nadie más cambiaba de plan. Lo probé solo en mi sesión con optimizer_use_invisible_indexes = TRUE y el plan real pasó a INDEX RANGE SCAN sobre IX_T6_C14_PEND con 116 lecturas y las mismas 2.056 filas. Como la prueba era buena lo hice VISIBLE, y el panel quedó en 118 lecturas y 0,32 ms por apertura, unas 45 veces menos lecturas.
+
+Evidencia: `casos/20261126T104946Z_C14_entender.txt`, `casos/20261126T104948Z_C14_diagnosticar.txt`, `casos/20261126T104952Z_C14_solucionar.txt` y `casos/20261126T104954Z_C14_validar.txt`.
+
 2. Redo con el índice INVISIBLE y VISIBLE: ¿qué demuestra?
+
+Cambiar el canal de 20.000 pedidos generó 9.007 KB de redo sin mantener el índice (UNUSABLE), 10.403 KB con el índice INVISIBLE y 10.403 KB con él VISIBLE. Es decir, invisible y visible cuestan exactamente lo mismo al escribir: unos 1.400 KB más, alrededor de un 15 %. Demuestra que INVISIBLE solo afecta al optimizador, que no lo usa, pero Oracle lo sigue manteniendo en cada INSERT, UPDATE o DELETE para que esté al día si se vuelve a hacer visible. Por eso la marcha atrás con ALTER INDEX ... INVISIBLE es inmediata, pero un índice que no se usa sigue costando en cada escritura y al final hay que borrarlo.
+
+Evidencia: `casos/20261126T105111Z_C14_observar.txt`.
 
 ## Parte F · C17 · INC-604 con AWR, ASH y ADDM
 1. SLI y SLO; p95 antes y después; instantáneas AWR que usaste.
@@ -120,7 +147,7 @@ Evidencia: `casos/20261126T092611Z_C08_entender.txt` y `casos/20261126T093028Z_C
 - **Prevención (qué evitaría que se repita):**
 
 ## Parte G · Incidente 3 · INC-6NN
-- **Síntoma (con números):**
+- **Síntoma (con números):**	
 - **Playbook y pasos seguidos (herramientas y vistas):**
 - **Causa raíz:**
 - **Arreglo aplicado (órdenes exactas) y por qué ese:**
