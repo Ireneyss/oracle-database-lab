@@ -1,0 +1,13 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T16:30:33Z origen=inc609-arreglo
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T16:29:07 scn=7442918
+
+Session altered.
+
+
+Trigger dropped.
+
+
+DISPARADORES_LOGON_ACTIVOS
+--------------------------
+			 0
+

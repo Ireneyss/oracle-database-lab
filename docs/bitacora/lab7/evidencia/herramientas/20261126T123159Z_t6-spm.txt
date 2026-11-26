@@ -1,0 +1,3 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T12:31:59Z origen=t6/spm
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7438992
+== Líneas base ==

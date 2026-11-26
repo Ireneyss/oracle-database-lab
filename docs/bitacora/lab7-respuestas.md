@@ -148,29 +148,29 @@ Al tener línea base, el plan que quería el optimizador (el recorrido completo)
 
 Evidencia: `casos/20261126T112532Z_C18_observar.txt` y `casos/20261126T112447Z_C18_provocar.txt`.
 
-## Parte G · Incidente 1 · INC-6NN
-- **Síntoma (con números):**
-- **Playbook y pasos seguidos (herramientas y vistas):**
-- **Causa raíz:**
-- **Arreglo aplicado (órdenes exactas) y por qué ese:**
-- **Verificación (archivo de evidencia con todo OK):**
-- **Prevención (qué evitaría que se repita):**
+## Parte G · Incidente 1 · INC-607
+- **Síntoma (con números):** el 26-11-2026 a las 12:29 UTC se rompió el incidente: el historial de pedidos de un cliente (cliente de prueba 7402, cuenta T6_APP) hacía 6.194 lecturas por ejecución, propias de un recorrido completo de PEDIDO, y no usaba ningún índice por ID_CLIENTE, aunque Atención al cliente había comprobado que ese índice estaba VALID, VISIBLE y con estadísticas.
+- **Playbook y pasos seguidos (herramientas y vistas):** playbook PB-3 (el plan cambió) y runbook RB-4 (SPM). Primero medí el síntoma con «incidente INC-607 verificar» (tres FALLO: línea base FIXED activa, sin índice y 6.194 lecturas). Después miré las líneas base con «t6 spm lista inc607» (DBA_SQL_PLAN_BASELINES): había una sola, SQL_PLAN_6jv11k80dz3z995a18d93 del handle SQL_68ec219200df8fe9, con ENABLED = YES, ACCEPTED = YES, FIXED = YES y ORIGIN = MANUAL-LOAD-FROM-CURSOR-CACHE.
+- **Causa raíz:** alguien cargó a mano desde la caché de cursores un plan de recorrido completo como línea base y lo dejó fijado (FIXED = YES). Con una línea base fija, el optimizador está obligado a usar ese plan para la sentencia, aunque el índice sea mucho mejor; un plan nuevo solo se guarda como no aceptado. Por eso el índice «perfecto» no bastaba: el problema no estaba en el índice, sino en que SPM no dejaba al optimizador elegirlo.
+- **Arreglo aplicado (órdenes exactas) y por qué ese:** «t6 spm quitar SQL_68ec219200df8fe9», que ejecuta DBMS_SPM.DROP_SQL_PLAN_BASELINE(sql_handle => 'SQL_68ec219200df8fe9'). Es la vuelta atrás que marca el runbook RB-4 y el cambio mínimo: quita solo esa línea base y deja que el optimizador vuelva a decidir con las estadísticas, sin tocar índices, estadísticas ni parámetros. Lo comprobé con «t6 spm lista inc607», que ya no muestra ninguna línea base.
+- **Verificación (archivo de evidencia con todo OK):** `incidentes/20261126T123200Z_INC-607_verificar.txt`: no queda ninguna línea base FIXED, el historial del cliente 7402 usa un índice por ID_CLIENTE y las lecturas bajan de 6.194 a 15. El estado roto está en `incidentes/20261126T122934Z_INC-607_romper.txt` y `incidentes/20261126T122956Z_INC-607_verificar.txt`.
+- **Prevención (qué evitaría que se repita):** no fijar planes (FIXED = YES) salvo como medida temporal documentada, y revisar periódicamente DBA_SQL_PLAN_BASELINES buscando líneas base FIXED o cargadas a mano sin dueño. Si hace falta proteger un plan, cargarlo como aceptado pero sin fijar, para que la evolución pueda aceptar uno mejor (como en C18), y que cualquier cambio en SPM pase por el runbook RB-4 con su vuelta atrás anotada.
 
-## Parte G · Incidente 2 · INC-6NN
-- **Síntoma (con números):**
-- **Playbook y pasos seguidos (herramientas y vistas):**
-- **Causa raíz:**
-- **Arreglo aplicado (órdenes exactas) y por qué ese:**
-- **Verificación (archivo de evidencia con todo OK):**
-- **Prevención (qué evitaría que se repita):**
+## Parte G · Incidente 2 · INC-609
+- **Síntoma (con números):** desde la rotura del 26-11-2026 a las 12:43 UTC, el informe de ventas por cliente de la aplicación (cuenta T6_APP, GROUP BY id_cliente sobre el millón de pedidos y ORDER BY) se desbordaba a TEMP y tardaba el doble. La primera verificación dio tres FALLO: una sesión nueva de T6_APP trabajaba con workarea_size_policy = MANUAL, el informe hacía 1 ejecución en varias pasadas por TEMP y había un disparador de logon activo cambiando la memoria. El DBA de noche decía que la PGA estaba sobrada.
+- **Playbook y pasos seguidos (herramientas y vistas):** playbook PB-4 (TEMP y memoria de trabajo). Con «t6 memoria» comprobé la instancia: pga_aggregate_target = 512 MB y el asesor de la PGA daba 100 % de aciertos y 0 sobreasignaciones con cualquier tamaño, incluso con 64 MB, así que a la instancia no le faltaba memoria. Luego busqué qué limitaba a la sesión, como en C04, consultando DBA_TRIGGERS: el disparador T6.TRG_SESION_APLICACION, AFTER LOGON sobre T6_APP y ENABLED, con este cuerpo: workarea_size_policy = MANUAL, sort_area_size = 112 KB y hash_area_size = 224 KB.
+- **Causa raíz:** un disparador de logon heredado (una «optimización» de 2019) pone cada sesión de la aplicación en memoria MANUAL con áreas de trabajo diminutas. Agrupar un millón de pedidos en unos 100.000 clientes y ordenarlos no cabe en 112 o 224 KB, así que se va a TEMP. Subir pga_aggregate_target no lo habría arreglado, porque ese parámetro solo reparte memoria entre las sesiones en AUTO; una sesión en MANUAL lo ignora y usa sort_area_size y hash_area_size.
+- **Arreglo aplicado (órdenes exactas) y por qué ese:** en FREEPDB1, DROP TRIGGER t6.trg_sesion_aplicacion; y comprobé que quedaban 0 disparadores de logon activos en T6. Es el cambio mínimo: quita solo lo que limitaba a la aplicación, sin tocar parámetros de memoria de la instancia, y las sesiones nuevas vuelven solas a la PGA automática.
+- **Verificación (archivo de evidencia con todo OK):** `incidentes/20261126T163036Z_INC-609_verificar.txt`: una sesión nueva de T6_APP trabaja con workarea_size_policy = AUTO, el informe no se desborda (0 pasadas simples y 0 múltiples) y no queda ningún disparador de logon activo. El antes está en `incidentes/20261126T124348Z_INC-609_romper.txt` y `incidentes/20261126T124406Z_INC-609_verificar.txt`, y el diagnóstico y el arreglo en `herramientas/20261126T162942Z_t6-memoria.txt`, `herramientas/20261126T162949Z_inc609-disparadores.txt` y `herramientas/20261126T163032Z_inc609-arreglo.txt`.
+- **Prevención (qué evitaría que se repita):** revisar DBA_TRIGGERS con evento LOGON en cada revisión de cambios y no permitir disparadores que cambien parámetros de sesión sin dueño ni documentación. Ante «escribe en TEMP», mirar primero la política de la sesión y quién la cambia (disparadores, el código de la aplicación) antes de subir la memoria de la instancia, y vigilar las pasadas a TEMP en V$SQL_WORKAREA.
 
-## Parte G · Incidente 3 · INC-6NN
-- **Síntoma (con números):**	
-- **Playbook y pasos seguidos (herramientas y vistas):**
-- **Causa raíz:**
-- **Arreglo aplicado (órdenes exactas) y por qué ese:**
-- **Verificación (archivo de evidencia con todo OK):**
-- **Prevención (qué evitaría que se repita):**
+## Parte G · Incidente 3 · INC-610
+- **Síntoma (con números):** desde la rotura del 26-11-2026 a las 16:33 UTC varias pantallas de la web iban lentas a la vez (la búsqueda por código postal, el panel de pendientes...). La primera verificación dio tres FALLO: optimizer_index_cost_adj de FREEPDB1 = 6200 (por defecto 100), el valor estaba guardado en el SPFILE de la PDB y la V2 de la búsqueda por código postal había dejado de usar IX_T6_PED_CP.
+- **Playbook y pasos seguidos (herramientas y vistas):** playbook PB-3 (el plan cambió). Como cambiaban muchos planes a la vez, busqué una causa común en vez de mirar cada consulta: consulté en FREEPDB1 V$SYSTEM_PARAMETER filtrando los parámetros del optimizador cambiados, y salió optimizer_index_cost_adj = 6200 con ISMODIFIED = MODIFIED e ISPDB_MODIFIABLE = TRUE. En V$SPPARAMETER, para el con_id de FREEPDB1, estaba también guardado con 6200, así que volvería a aplicarse en el próximo arranque.
+- **Causa raíz:** un «ajuste» del consultor a nivel de PDB (ALTER SYSTEM SET optimizer_index_cost_adj = 6200 SCOPE = BOTH). Ese parámetro es el porcentaje que se aplica al coste de los accesos por índice: con 6200 cada acceso por índice parece 62 veces más caro, así que el optimizador pasó a recorridos completos en todas las consultas que usaban índices a la vez.
+- **Arreglo aplicado (órdenes exactas) y por qué ese:** en FREEPDB1, ALTER SYSTEM RESET optimizer_index_cost_adj SCOPE = BOTH. No servía un ALTER SESSION, porque solo arregla mi sesión y la aplicación seguiría con 6200, ni un ALTER SYSTEM SET ... = 100, porque dejaría un valor explícito en el SPFILE de la PDB y el parámetro seguiría marcado como cambiado. RESET quita el valor de la memoria y del SPFILE y el parámetro vuelve a heredar el valor por defecto, como la vuelta atrás del Lab 6. Después de aplicarlo quedó value = 100, ISDEFAULT = TRUE, ISMODIFIED = FALSE y 0 entradas en el SPFILE de la PDB.
+- **Verificación (archivo de evidencia con todo OK):** `incidentes/20261126T163440Z_INC-610_verificar.txt`: optimizer_index_cost_adj de FREEPDB1 = 100, no queda en el SPFILE de la PDB y la V2 de la búsqueda vuelve a usar IX_T6_PED_CP. El antes está en `incidentes/20261126T163334Z_INC-610_romper.txt` y `incidentes/20261126T163337Z_INC-610_verificar.txt`, y el diagnóstico y el arreglo en `herramientas/20261126T163407Z_inc610-parametros.txt` y `herramientas/20261126T163438Z_inc610-arreglo.txt`.
+- **Prevención (qué evitaría que se repita):** que ningún cambio de parámetros del optimizador a nivel de PDB se haga sin un cambio planificado, con línea base antes y después (runbook RB-1) y su vuelta atrás anotada. Y vigilar periódicamente V$SYSTEM_PARAMETER con ISDEFAULT = 'FALSE' o ISMODIFIED distinto de 'FALSE' en la PDB: cuando cambian muchos planes a la vez, es lo primero que hay que mirar.
 
 ## Parte H · Reflexión
 1. De todo el laboratorio, ¿qué cambio dio más mejora por menos riesgo? Justifícalo con tus números.

@@ -1,0 +1,21 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T16:29:49Z origen=inc609-disparadores
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T16:29:07 scn=7442884
+
+Session altered.
+
+
+OWNER  TRIGGER_NAME		  TRIGGERING STATUS
+------ -------------------------- ---------- --------
+T6     TRG_SESION_APLICACION	  LOGON      ENABLED
+
+
+TRIGGER_BODY
+------------------------------------------------------------------------------------------
+BEGIN
+  -- <optimizacion> de 2019 para que los informes no se coman la memoria
+  EXECUTE IMMEDIATE 'ALTER SESSION SET workarea_size_policy = MANUAL';
+  EXECUTE IMMEDIATE 'ALTER SESSION SET sort_area_size = ' || (112 * 1024);
+  EXECUTE IMMEDIATE 'ALTER SESSION SET hash_area_size = ' || (112 * 2048);
+END;
+
+

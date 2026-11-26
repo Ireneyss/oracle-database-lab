@@ -1,0 +1,9 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T12:30:15Z origen=t6/spm
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7438932
+== Líneas base ==
+
+SQL_HANDLE           PLAN_NAME                        ENA ACC FIX ORIGIN                       TEXTO
+-------------------- -------------------------------- --- --- --- ---------------------------- ----------------------------------
+SQL_68ec219200df8fe9 SQL_PLAN_6jv11k80dz3z995a18d93   YES YES YES MANUAL-LOAD-FROM-CURSOR-CACH SELECT /* t6_inc607_historial */ C
+                                                                  E
+

@@ -1,0 +1,7 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T12:29:56Z origen=t6/INC-607_verificar
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7438924
+== INC-607 · verificar · alumno E066 · semilla 66
+OK    Incidente INC-607 roto para E066 (semilla 66) el 2026-11-26 12:29 · línea base FIXED de recorrido completo; cliente de prueba 7402
+FALLO No queda ninguna línea base FIXED activa para el historial
+FALLO El historial del cliente 7402 usa un índice por ID_CLIENTE
+FALLO Lecturas por historial (media de 3, incluye el primer análisis; el recorrido completo pasa de 5 000): 6194
