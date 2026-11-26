@@ -57,3 +57,16 @@ SELECT component, ROUND(current_size/1048576) mb FROM v$sga_dynamic_components W
 - **Propósito (para qué lo necesitaba):** que la validación de C17 encontrara en memoria el cursor de la V2, que la shared pool expulsaba nada más terminar la carga
 - **Qué hace (con mis palabras; línea a línea si es SQL corto):** la primera consulta enseña cuánta memoria tienen la shared pool y el buffer cache (432 y 976 MB). El ALTER SYSTEM fija un mínimo de 640 MB para la shared pool; como la SGA es automática (sga_target 1.536 MB), Oracle saca esa memoria del buffer cache. SCOPE = BOTH lo aplica ya y lo guarda en el SPFILE para los siguientes arranques. La última consulta comprueba el resultado: 640 MB de shared pool y 768 MB de buffer cache. Lo hice porque tenía 7.006 reloads en la SQL AREA: los cursores se expulsaban por falta de sitio. La vuelta atrás sería ALTER SYSTEM RESET shared_pool_size, porque antes no estaba fijado.
 - **Evidencia de ejecución (archivo de docs/bitacora/lab7/evidencia con mi cabecera):** docs/bitacora/lab7/evidencia/herramientas/20261126T111759Z_ajuste-shared-pool.txt y docs/bitacora/lab7/evidencia/casos/20261126T112010Z_C17_validar.txt
+
+## Entrada 3
+- **Herramienta:** Claude
+- **Prompt (literal, copiado tal cual):**
+```text
+quiero que me revises la bitacora para ver que está bien
+```
+- **Código recibido (el fragmento, o la ruta del archivo donde está):** no aplica (solo me indicó copiar mis archivos al portapapeles con cat … | clip.exe para pegarlos en el chat; no toca la base de datos)
+- **Dónde lo usé (parte, script o pregunta):** Parte H, revisión final de docs/bitacora/lab7-ia.md antes de abrir el PR
+- **Propósito (para qué lo necesitaba):** comprobar que mi declaración de IA estaba completa y bien hecha antes de entregar
+- **Qué hace (con mis palabras; línea a línea si es SQL corto):** le pasé el contenido de lab7-ia.md y comprobó que cada entrada tiene los siete campos rellenos, que los prompts están copiados tal cual, que el código declarado coincide con lo que ejecuté y que las evidencias que cito existen y llevan mi cabecera. No hubo que corregir nada.
+- **Evidencia de ejecución (archivo de docs/bitacora/lab7/evidencia con mi cabecera):** no aplica
+

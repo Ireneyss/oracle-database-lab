@@ -1,5 +1,5 @@
-== EVIDENCIA alumno=E066 hora=2026-11-26T16:43:12Z origen=09-verificacion-final
-== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T16:29:07 scn=7444830
+== EVIDENCIA alumno=E066 hora=2026-11-26T16:47:07Z origen=09-verificacion-final
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T16:29:07 scn=7447102
 == Parte A · Punto de partida ==
   [OK]    copia backups/20261125T194831Z_lab7-inicio íntegra
   [OK]    CDB abierta y en ARCHIVELOG (herencia del Lab 5) (READWRITE/ARCHIVELOG)
@@ -37,7 +37,7 @@
   [OK]    ningún archivo de la base ni traza en Git
   [OK]    login.sql con tu código (prompt de SQLcl)
   [OK]    código de alumno E066 en config/.env
-  [OK]    docs/bitacora/lab7-ia.md con 2 entrada(s) declarada(s)
+  [OK]    docs/bitacora/lab7-ia.md con 3 entrada(s) declarada(s)
   [OK]    primera línea: «He leído la política de uso de IA de la asignatura.»
   [OK]    ningún archivo de agente de IA (.claude/, CLAUDE.md, AGENTS.md, .cursor/…)
   [OK]    ningún commit con firma o coautor de IA (lab6-final..HEAD)
