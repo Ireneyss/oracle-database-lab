@@ -1,0 +1,14 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T09:21:48Z origen=t6/C07_validar
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7404879
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    V2 usa el índice IX_T6_PED_CP (INDEX RANGE SCAN)
+OK    Lecturas por búsqueda: 121 frente a 5228
+OK    Latencia p95 de la web: 1.5 ms frente a 58.3 ms

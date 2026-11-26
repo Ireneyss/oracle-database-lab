@@ -57,11 +57,31 @@ Evidencia: `casos/20261126T091806Z_C04_observar.txt` y `casos/20261126T091653Z_C
 
 ## Parte D · C07 · EXPLAIN PLAN frente al plan real
 1. Copia el predicado que delata el problema en el plan real y explica de dónde sale.
+
+En el plan real del cursor de la V1 (DISPLAY_CURSOR del SQL_ID 0dbx7196jdajy) sale: 2 - filter(TO_NUMBER("CODIGO_POSTAL")=:B1), con TABLE ACCESS FULL sobre PEDIDO. Sale de una conversión implícita: la V1 pasa el código postal como NUMBER (en Peeked Binds aparece :B1 (NUMBER): 30038), pero la columna es VARCHAR2(5). Para poder comparar, Oracle convierte la columna a número, y al tener una función sobre la columna el índice IX_T6_PED_CP (que guarda texto) ya no sirve. El propio plan lo avisa en el SQL Analysis Report. En observar vi lo mismo con fechas: comparar FECHA_PEDIDO (DATE) con SYSTIMESTAMP mete un INTERNAL_FUNCTION sobre la columna y hace TABLE ACCESS FULL, mientras que con SYSDATE usa IX_T6_PED_FECHA.
+
+Evidencia: `casos/20261126T092145Z_C07_diagnosticar.txt` y `casos/20261126T092222Z_C07_observar.txt`.
+
 2. Lecturas y p95 de V1 y V2. ¿Por qué EXPLAIN PLAN no lo vio?
+
+Con la V1 cada búsqueda hacía 5.228 lecturas lógicas y la p95 de la web era de 58,3 ms. Con la V2, que recibe el código postal con el mismo tipo que la columna, bajó a 121 lecturas (unas 43 veces menos) y 1,5 ms de p95, usando INDEX RANGE SCAN. EXPLAIN PLAN no lo vio porque no ejecuta la consulta: trata la variable como texto sin mirar qué tipo ni qué valor va a llegar, así que no añade la conversión y predice el índice (coste 94). El plan real sí sabe que llegó un NUMBER, por eso es el que hay que mirar.
+
+Evidencia: `casos/20261126T092144Z_C07_entender.txt`, `casos/20261126T092147Z_C07_solucionar.txt` y `casos/20261126T092148Z_C07_validar.txt`.
+
 
 ## Parte D · C08 · E-Rows frente a A-Rows
 1. Estimación y filas reales antes y después del grupo de columnas. ¿En qué línea del plan se separan por primera vez?
+
+Leyendo el plan real de dentro afuera, la primera línea que se separa es la 3 (TABLE ACCESS BY INDEX ROWID BATCHED sobre CLIENTE, con el filtro COMUNIDAD = 'COM09'): estimaba 3 clientes y salieron 56. La línea 4, solo con la ciudad, estaba bien (50 estimadas, 56 reales), y la 5 también si multiplicas por Starts (10 × 56 = 560, salieron 599). Lo de arriba heredó el error: la línea 1 estimaba 28 pedidos y salieron 599. Después de crear el grupo de columnas (CIUDAD, COMUNIDAD) y recoger estadísticas, la línea 3 estima 50 (reales 56) y la línea 1, 496 (reales 599). El plan es el mismo porque es pequeño; lo que se arregla es la estimación.
+
+Evidencia: `casos/20261126T092612Z_C08_diagnosticar.txt`, `casos/20261126T092613Z_C08_solucionar.txt` y `casos/20261126T092615Z_C08_validar.txt`.
+
 2. ¿Por qué el optimizador multiplicaba mal las dos selectividades?
+
+Porque supone que las columnas son independientes: hay 2.000 ciudades y 18 comunidades, así que calcula 100.000 × 1/2.000 × 1/18 ≈ 2,9 clientes. Pero cada ciudad está en una sola comunidad (MAX_COMUNIDADES_POR_CIUDAD = 1): si ya sé que el cliente es de Ciudad0042, el filtro de COM09 no quita a nadie, y el optimizador lo cuenta como si dividiera otra vez entre 18. Un índice o un histograma no lo arreglan porque miran cada columna por separado. El grupo de columnas crea una columna virtual oculta (SYS_STUBJHRJ63BYYQ61EBQAQU2TM_) que cuenta las combinaciones distintas: 2.000, así que la estimación pasa a ser 100.000 / 2.000 = 50.
+
+Evidencia: `casos/20261126T092611Z_C08_entender.txt` y `casos/20261126T093028Z_C08_observar.txt`.
+
 
 ## Parte E · C12 · Estadísticas obsoletas
 1. Filas según las estadísticas y reales; método de unión y lecturas antes y después.
