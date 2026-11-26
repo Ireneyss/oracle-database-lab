@@ -174,4 +174,13 @@ Evidencia: `casos/20261126T112532Z_C18_observar.txt` y `casos/20261126T112447Z_C
 
 ## Parte H · Reflexión
 1. De todo el laboratorio, ¿qué cambio dio más mejora por menos riesgo? Justifícalo con tus números.
+
+Para mí, el de la V2 de la búsqueda por código postal (C07 y C17): cambiar el tipo del parámetro de NUMBER a VARCHAR2 para que coincida con la columna. Fue un solo cambio en la aplicación, sin crear índices, sin tocar estadísticas ni parámetros, y con una vuelta atrás trivial (volver a la V1). Con la misma carga de 3 sesiones durante 120 s, la p95 bajó de 82,1 ms a 1,02 ms (cumpliendo el SLO de 20 ms), las búsquedas atendidas pasaron de 4.078 a 31.781 y las lecturas por ejecución de 5.125 a 94. Cerca le anda el índice invisible de C14 (de 5.266 a 118 lecturas por apertura), pero ese sí añade un objeto que cuesta redo en cada escritura, unos 1.400 KB más en mi medida.
+
+Evidencia: `casos/20261126T112010Z_C17_validar.txt` y `casos/20261126T092148Z_C07_validar.txt`.
+
 2. Un caso no evaluable (sin ★) que hayas hecho y qué aprendiste de él (opcional, cuenta para la certificación).
+
+No he hecho ningún caso sin ★. Lo más parecido fue lo que aprendí con mi propia base: la shared pool expulsaba los cursores en segundos (7.006 reloads en la SQL AREA) y algunas fases que leen el plan real de memoria salían vacías o con FALLO, hasta que fijé shared_pool_size = 640M. Me quedo con que, antes de fiarme de V$SQL o de DISPLAY_CURSOR, conviene comprobar que la shared pool tiene sitio, y que AWR guarda el plan aunque el cursor ya no esté.
+
+Evidencia: `herramientas/20261126T111759Z_ajuste-shared-pool.txt`.
