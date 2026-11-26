@@ -1,0 +1,15 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T11:24:56Z origen=t6/C18_validar
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7431944
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    Hay una línea base ACEPTADA y ACTIVA para el informe
+OK    El informe de la aplicación se ejecuta con la línea base
+OK    Y eso SIN tocar las estadísticas del martes (ESTADO sigue sin histograma: NONE)
+OK    Lecturas por ejecución con SPM: 190 frente a 5227 del plan del martes

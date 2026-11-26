@@ -1,0 +1,78 @@
+
+==================== 1 · Cargar el plan del lunes desde el AWR de la PDB como línea base (SQL plan baseline) ====================
+[DBA] 
+[DBA] SYS> ALTER SESSION SET CONTAINER = FREEPDB1;
+[DBA] 
+[DBA] Session altered.
+[DBA] 
+[DBA] SYS> SET SERVEROUTPUT ON
+[DBA] SYS> COLUMN origin FORMAT A26
+[DBA] SYS> COLUMN plan_name FORMAT A32
+[DBA] SYS> DECLARE n PLS_INTEGER; i NUMBER; f NUMBER; bueno NUMBER;
+[DBA]   2  BEGIN
+[DBA]   3    SELECT MAX(DECODE(etq, 'LUNES_INI', snap_id)), MAX(DECODE(etq, 'LUNES_FIN', snap_id)) INTO i, f FROM t6.c18_snap;
+[DBA]   4    -- el plan del lunes se elige por sus NÚMEROS en AWR: el de menos lecturas por ejecución en ese intervalo
+[DBA]   5    SELECT plan_hash_value INTO bueno FROM (
+[DBA]   6      SELECT q.plan_hash_value, SUM(q.buffer_gets_delta) / NULLIF(SUM(q.executions_delta), 0) g
+[DBA]   7        FROM awr_pdb_sqlstat q JOIN awr_pdb_sqltext t ON t.sql_id = q.sql_id
+[DBA]   8       WHERE q.snap_id > i AND q.snap_id <= f AND DBMS_LOB.SUBSTR(t.sql_text, 40, 1) LIKE 'SELECT /* t6_c18_pendientes */%'
+[DBA]   9       GROUP BY q.plan_hash_value HAVING SUM(q.executions_delta) > 0 ORDER BY g FETCH FIRST 1 ROW ONLY);
+[DBA]  10    DBMS_OUTPUT.PUT_LINE('Plan del lunes en AWR (snapshots ' || i || ' a ' || f || '): ' || bueno);
+[DBA]  11    n := DBMS_SPM.LOAD_PLANS_FROM_AWR(begin_snap => i, end_snap => f,
+[DBA]  12           basic_filter => q'[sql_text LIKE 'SELECT /* t6_c18_pendientes */%' AND plan_hash_value = ]' || bueno);
+[DBA]  13    DBMS_OUTPUT.PUT_LINE('Planes cargados desde AWR como línea base aceptada: ' || n);
+[DBA]  14  END;
+[DBA]  15  /
+[DBA] Plan del lunes en AWR (snapshots 37 a 38): 1767728868
+[DBA] Planes cargados desde AWR como línea base aceptada: 1
+[DBA] 
+[DBA] PL/SQL procedure successfully completed.
+[DBA] 
+[DBA] SYS> SELECT plan_name, enabled, accepted, fixed, origin FROM dba_sql_plan_baselines WHERE sql_text LIKE 'SELECT /* t6_c18_pendientes */%';
+[DBA] 
+[DBA] PLAN_NAME                        ENA ACC FIX ORIGIN
+[DBA] -------------------------------- --- --- --- --------------------------
+[DBA] SQL_PLAN_0a27u7nan424ba00b9863   YES YES NO  MANUAL-LOAD-FROM-AWR
+[DBA] 
+[DBA] 1 row selected.
+[DBA] 
+[DBA] SYS> EXIT
+
+==================== 2 · El mismo informe, con las estadísticas del martes (sin histograma) ====================
+CON_SPM      plan 1767728868  198 lecturas/ejecución  7.2 ms  línea base: SQL_PLAN_0a27u7nan424ba00b9863
+[DBA] 
+[DBA] SYS> ALTER SESSION SET CONTAINER = FREEPDB1;
+[DBA] 
+[DBA] Session altered.
+[DBA] 
+[DBA] SYS> SET SERVEROUTPUT OFF LINESIZE 160
+[DBA] SYS> SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(
+[DBA]   2    (SELECT sql_id FROM v$sql WHERE sql_text LIKE 'SELECT /* t6_c18_pendientes */%' AND sql_plan_baseline IS NOT NULL AND ROWNUM = 1),
+[DBA]   3    (SELECT MAX(child_number) FROM v$sql WHERE sql_text LIKE 'SELECT /* t6_c18_pendientes */%' AND sql_plan_baseline IS NOT NULL),
+[DBA]   4    'BASIC +ROWS +NOTE'));
+[DBA] 
+[DBA] PLAN_TABLE_OUTPUT
+[DBA] ------------------------------------------------------------------------------------------------------------------------------------------------------
+[DBA] EXPLAINED SQL STATEMENT:
+[DBA] ------------------------
+[DBA] SELECT /* t6_c18_pendientes */ COUNT(*), SUM(importe),
+[DBA] MAX(fecha_pedido) FROM t6.pedido WHERE estado = 'P'
+[DBA] 
+[DBA] Plan hash value: 1767728868
+[DBA] 
+[DBA] -------------------------------------------------------------------------
+[DBA] | Id  | Operation                            | Name             | Rows  |
+[DBA] -------------------------------------------------------------------------
+[DBA] |   0 | SELECT STATEMENT                     |                  |       |
+[DBA] |   1 |  SORT AGGREGATE                      |                  |     1 |
+[DBA] |   2 |   TABLE ACCESS BY INDEX ROWID BATCHED| PEDIDO           |   250K|
+[DBA] |   3 |    INDEX RANGE SCAN                  | IX_T6_PED_ESTADO |   250K|
+[DBA] -------------------------------------------------------------------------
+[DBA] 
+[DBA] Note
+[DBA] -----
+[DBA]    - SQL plan baseline SQL_PLAN_0a27u7nan424ba00b9863 used for this statement (1 of 1 reproduced)
+[DBA] 
+[DBA] 20 rows selected.
+[DBA] 
+[DBA] SYS> EXIT

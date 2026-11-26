@@ -1,0 +1,14 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+FORMA              MS_EJEC MS_EN_PLSQL  PCT_PLSQL
+--------------- ---------- ----------- ----------
+plsql                 1141         594         52
+
+1 row selected.
+
+-- Lectura: PLSQL_EXEC_TIME es el tiempo dentro de la función. Una llamada por fila = 1 000 000 de cambios SQL ↔ PL/SQL.

@@ -1,0 +1,12 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    Hard parses: 24 con variables de enlace frente a 5043 con literales
+OK    Tiempo total: 180 ms frente a 4790 ms
+OK    Cursores en la shared pool: 1 con variables, 1879 con literales (y los que ya expulsó)

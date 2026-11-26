@@ -1,0 +1,24 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+== 1 · Lo que midió la propia sesión (V$MYSTAT y V$SESSION_EVENT, antes y después) ==
+
+ETQ           COMMITS ESPERAS_LOG_FILE_SYNC MS_EN_LOG_FILE_SYNC MS_POR_ESPERA  REDO_KB
+---------- ---------- --------------------- ------------------- ------------- --------
+POR_FILA        20000                 20000                4330          .217   12,196
+
+1 row selected.
+
+== 2 · El mismo evento en toda la instancia (acumulado desde el arranque) ==
+
+EVENT                                    TOTAL_WAITS   SEGUNDOS   MS_MEDIO
+---------------------------------------- ----------- ---------- ----------
+log file sync                                  20132        4.5       .221
+
+1 row selected.
+
+-- Lectura: «log file sync» = la sesión espera a que LGWR escriba su redo en disco al confirmar (COMMIT).
+-- Un COMMIT por fila = 20 000 esperas. La causa no es el disco: es el diseño de la transacción.

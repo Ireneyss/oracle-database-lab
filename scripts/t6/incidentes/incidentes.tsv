@@ -1,0 +1,9 @@
+# id	carpeta	título (lo que dice el ticket)	playbook	runbook	casos que lo preparan
+INC-605	INC-605_estadisticas-bloqueadas	El informe de cestas abandonadas tarda desde la carga de anoche	PB-3	RB-2	C12 C13
+INC-606	INC-606_indice-fuera-de-juego	La búsqueda por código postal va lenta y nadie ha desplegado nada	PB-2	RB-3	C07 C14 C17
+INC-607	INC-607_linea-base-mala	El historial del cliente es lento aunque su índice está bien	PB-3	RB-4	C18
+INC-608	INC-608_histograma-perdido	El informe por estado empeoró tras el mantenimiento nocturno	PB-3	RB-2	C12 C13 C18
+INC-609	INC-609_memoria-de-informes	Los informes de la aplicación escriben en TEMP y tardan el doble	PB-4	RB-1	C04 C19 C22
+INC-610	INC-610_parametro-saboteado	Muchas consultas cambiaron de plan a la vez en la PDB	PB-3	RB-1	C07 C09 C17
+INC-611	INC-611_estimacion-correlada	El listado por ciudad y comunidad elige mal el método de unión	PB-2	RB-2	C08
+INC-612	INC-612_login-sin-indice	«¿Olvidaste tu contraseña?» tarda y consume CPU	PB-5	RB-3	C16

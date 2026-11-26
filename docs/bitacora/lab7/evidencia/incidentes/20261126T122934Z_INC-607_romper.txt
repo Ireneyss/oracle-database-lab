@@ -1,0 +1,4 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T12:29:34Z origen=t6/INC-607_romper
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7438885
+== INC-607 · romper · alumno E066 · semilla 66
+Roto: el historial de pedidos del cliente (módulo atencion_cliente) ya no va como ayer.

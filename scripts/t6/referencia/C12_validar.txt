@@ -1,0 +1,12 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    Estadísticas de CARRITO al día: 200100 filas (reales 200100), STALE = NO
+OK    Lecturas lógicas del informe: 5907 frente a 212063
+OK    El informe usa ahora HASH JOIN

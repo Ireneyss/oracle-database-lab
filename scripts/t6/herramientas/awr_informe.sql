@@ -1,0 +1,6 @@
+-- herramientas/awr_informe.sql · informe AWR en texto de la PDB entre dos instantáneas (t6 awr informe INI FIN)
+SET HEADING OFF FEEDBACK OFF PAGESIZE 0 LINESIZE 200 TRIMSPOOL ON VERIFY OFF
+ALTER SESSION SET CONTAINER = FREEPDB1;
+SELECT output FROM TABLE(DBMS_WORKLOAD_REPOSITORY.AWR_REPORT_TEXT(SYS_CONTEXT('USERENV', 'CON_DBID'),
+       (SELECT instance_number FROM v$instance), &1, &2));
+EXIT

@@ -1,0 +1,18 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+MEDIDA                                             VALOR
+-------------------------------------------------- --------------------
+Pedidos que muestra el panel                       2056
+Pedidos que hay en la tabla                        1000000
+Lecturas lógicas por apertura del panel            5290
+Milisegundos por apertura                          23.7
+
+4 rows selected.
+
+-- Lectura: el panel enseña unos 2 000 pedidos (el 0,2 %) y para ello lee la tabla entera. 30 aperturas por hora son
+-- 30 recorridos completos de un millón de filas. La petición del jefe del call center: «que vaya instantáneo».

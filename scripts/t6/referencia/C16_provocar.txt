@@ -1,0 +1,19 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF SERVEROUTPUT OFF
+
+PL/SQL procedure successfully completed.
+
+== 50 clientes piden recuperar la contraseña (escriben el correo como les sale) ==
+
+PL/SQL procedure successfully completed.
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+Búsquedas: 50 · 17.01 ms y 1377 lecturas lógicas cada una
+
+1 row selected.
+

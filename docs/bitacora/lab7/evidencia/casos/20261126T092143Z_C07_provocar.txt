@@ -1,0 +1,14 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T09:21:43Z origen=t6/C07_provocar
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7404838
+[APP] 
+[APP] T6_APP> SET ECHO OFF
+[APP] 
+[APP] PL/SQL procedure successfully completed.
+[APP] 
+[APP] RESULTADO
+[APP] --------------------------------------------------------------------------------------------------------------
+[APP] Búsquedas hechas: 1
+[APP] 
+[APP] 1 row selected.
+[APP] 
+Búsquedas registradas por la web (C07_V1): 40

@@ -1,0 +1,7 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T12:43:48Z origen=t6/INC-609_romper
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7439613
+== INC-609 · romper · alumno E066 · semilla 66
+
+Session altered.
+
+Roto: los informes de la aplicación (cuenta T6_APP) ya no son los de ayer.

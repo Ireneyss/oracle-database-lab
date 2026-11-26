@@ -1,0 +1,128 @@
+== EVIDENCIA alumno=E066 hora=2026-11-25T19:54:42Z origen=t6/00_preparar
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-25T19:52:10 scn=7357636
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+== 1 · Comprobaciones y limpieza de lo que dejaron los casos ==
+
+PL/SQL procedure successfully completed.
+
+PL/SQL procedure successfully completed.
+
+SYS@FREE> PROMPT == 2 · El banco: copia de TiendaSur en el esquema T6 ==
+== 2 · El banco: copia de TiendaSur en el esquema T6 ==
+SYS@FREE> CREATE TABLESPACE tbs_t6 DATAFILE '/opt/oracle/oradata/FREE/FREEPDB1/tbs_t6_01.dbf'
+  2    SIZE 200M AUTOEXTEND ON NEXT 50M MAXSIZE 1G;
+
+Tablespace created.
+
+SYS@FREE> CREATE USER t6 NO AUTHENTICATION DEFAULT TABLESPACE tbs_t6 QUOTA UNLIMITED ON tbs_t6;
+
+User created.
+
+SYS@FREE> SET ECHO OFF
+
+Table created.
+
+Table created.
+
+Table altered.
+
+Table altered.
+
+Table altered.
+
+Index created.
+
+Index created.
+
+Index created.
+
+Index created.
+
+Index created.
+
+Index created.
+
+Table created.
+
+Table created.
+
+== 3 · La aplicación: el paquete T6.APP (la tienda web) ==
+
+Package created.
+
+Package body created.
+
+No errors.
+== 4 · La cuenta de la aplicación (T6_APP): ejecuta la tienda y puede ver sus propios planes ==
+
+User created.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+== 5 · Estadísticas «ingenuas» (sin histogramas) y una shared pool limpia ==
+
+PL/SQL procedure successfully completed.
+
+System altered.
+
+== 6 · Resultado ==
+
+TABLE_NAME           NUM_ROWS     BLOCKS LAST_ANALYZED
+------------------ ---------- ---------- -------------------
+APP_LOG
+CLIENTE                100000       1453 2026-11-25 19:54:40
+LINEA_BASE
+PEDIDO                1000000       5312 2026-11-25 19:54:40
+
+4 rows selected.
+
+INDEX_NAME           TABLE_NAME             BLEVEL LEAF_BLOCKS DISTINCT_KEYS CLUSTERING_FACTOR
+-------------------- ------------------ ---------- ----------- ------------- -----------------
+IX_T6_CLI_CIUDAD     CLIENTE                     1         307          2000             98277
+IX_T6_CLI_EMAIL      CLIENTE                     2         516         99328             20129
+PK_T6_CLIENTE        CLIENTE                     1         208        100000              1421
+IX_T6_PED_CLIENTE    PEDIDO                      2        2216        100816            999041
+IX_T6_PED_CP         PEDIDO                      2        2370         11000            991398
+IX_T6_PED_ESTADO     PEDIDO                      2        1812             4             10065
+IX_T6_PED_FECHA      PEDIDO                      2        2653        997696              5220
+PK_T6_PEDIDO         PEDIDO                      2        2088       1000000              5220
+
+8 rows selected.
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    Banco T6 listo: T6 y T6_APP creados
+
+1 row selected.
+

@@ -1,0 +1,5 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T08:28:20Z origen=recuperar-terminal
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7399530
+Sin copias de emergencia
+21:## Entrada 1
+3

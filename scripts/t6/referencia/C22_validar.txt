@@ -1,0 +1,9 @@
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    El asesor de la SGA tiene 7 tamaños estimados
+OK    El asesor de la PGA tiene 14 tamaños estimados
+OK    PGA automática activa: pga_aggregate_target = 512 MB
+OK    workarea_size_policy = AUTO (nadie la ha dejado en MANUAL)

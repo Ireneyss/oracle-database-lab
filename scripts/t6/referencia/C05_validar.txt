@@ -1,0 +1,11 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    El informe sin sugerencia usa HASH JOIN
+OK    Lecturas lógicas: 6611 frente a 646240 con la sugerencia

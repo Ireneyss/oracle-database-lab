@@ -1,0 +1,17 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T16:34:07Z origen=inc610-parametros
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T16:29:07 scn=7443156
+
+Session altered.
+
+== Parametros del optimizador cambiados en FREEPDB1 (memoria) ==
+
+NAME			     VALUE	ISDEFAULT ISMODIFIED ISPDB
+---------------------------- ---------- --------- ---------- -----
+optimizer_index_cost_adj     6200	TRUE	  MODIFIED   TRUE
+
+== Guardados en el SPFILE para FREEPDB1 ==
+
+NAME			     VALUE
+---------------------------- ----------
+optimizer_index_cost_adj     6200
+

@@ -1,0 +1,22 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T08:36:25Z origen=t6/C03_solucionar
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7400168
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+System altered.
+
+== 5 000 fichas con la versión corregida (variable de enlace) ... ==
+
+PL/SQL procedure successfully completed.
+
+MODO       LLAMADAS   MS_TOTAL HARD_PARSES MS_POR_FICHA
+-------- ---------- ---------- ----------- ------------
+LITERAL        5000       5090        5074        1.018
+BIND           5000        170          31         .034
+
+2 rows selected.
+

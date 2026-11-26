@@ -1,0 +1,19 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T11:17:59Z origen=ajuste-shared-pool
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7427012
+== Antes ==
+
+COMPONENT			     MB
+---------------------------- ----------
+shared pool			    432
+DEFAULT buffer cache		    976
+
+
+System altered.
+
+== Despues ==
+
+COMPONENT			     MB
+---------------------------- ----------
+shared pool			    640
+DEFAULT buffer cache		    768
+

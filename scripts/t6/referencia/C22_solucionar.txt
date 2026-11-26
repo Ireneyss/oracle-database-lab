@@ -1,0 +1,22 @@
+
+SYS@FREE> SET ECHO OFF
+
+CONCLUSION
+------------------------------------------------------------------------------------------------------------------------
+SGA: actual 1536 MB. Con la mayor estimada (3072 MB) el DB time baja un 1.2 %. Con menos de un 5 % no compensa ampliarla
+.
+
+PGA: el menor tamaño sin desbordes previstos es 614 MB (actual 512 MB).
+
+2 rows selected.
+
+-- La decisión se toma con semanas de AWR (DBA_HIST_SGA_TARGET_ADVICE, DBA_HIST_PGASTAT), no con una foto:
+
+   SNAP_ID FIN              PGA_MAXIMA_MB
+---------- ---------------- -------------
+         3 2026-11-25 14:16           543
+         2 2026-11-25 10:00           737
+         1 2026-11-25 09:19           718
+
+3 rows selected.
+

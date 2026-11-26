@@ -1,0 +1,24 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+ETQ        LLAMADAS LLAMADAS_SEG_SESION     P50_MS     P95_MS SLO
+-------- ---------- ------------------- ---------- ---------- ----------------
+C17_V1         2952                 8.2         84      381.1 INCUMPLE (< 20)
+
+1 row selected.
+
+ETQ         SNAP_ID HORA
+-------- ---------- --------
+V1_INI           42 15:04:30
+V1_FIN           43 15:04:57
+V1_FIN           44 15:06:32
+
+3 rows selected.
+
+-- Lectura: el ticket dice «va lenta»; la telemetría lo convierte en un número que se puede comparar después:
+-- la p95 incumple el SLO. Y tenemos un intervalo AWR que cubre exactamente la carga (las dos instantáneas).
+-- Lo mismo con la caja de herramientas:   t6 awr lista

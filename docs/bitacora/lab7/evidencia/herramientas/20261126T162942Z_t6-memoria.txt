@@ -1,0 +1,56 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T16:29:42Z origen=t6/memoria
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T16:29:07 scn=7442881
+== 1 · Tamaños actuales ==
+
+NAME                         MB
+-------------------- ----------
+memory_target                 0
+pga_aggregate_target        512
+sga_max_size               1536
+sga_target                 1536
+
+PGA_ASIGNADA_MB
+---------------
+            499
+== 2 · Asesor de la SGA: DB time estimado con otros tamaños ==
+
+    SGA_MB FACTOR ESTD_DB_TIME ESTD_PHYSICAL_READS
+---------- ------ ------------ -------------------
+       768   0.50            7                9986
+      1152   0.75            7                9986
+      1536   1.00            7                9986
+      1920   1.25            7                9986
+      2304   1.50            7                9986
+      2688   1.75            7                9986
+      3072   2.00            7                9986
+== 3 · Asesor de la PGA: acierto de caché y pasadas extra a TEMP con otros tamaños ==
+
+    PGA_MB FACTOR ACIERTO % SOBREASIGNACIONES
+---------- ------ --------- -----------------
+        64   0.13       100                 0
+       128   0.25       100                 0
+       256   0.50       100                 0
+       384   0.75       100                 0
+       512   1.00       100                 0
+       614   1.20       100                 0
+       717   1.40       100                 0
+       819   1.60       100                 0
+       922   1.80       100                 0
+      1024   2.00       100                 0
+      1536   3.00       100                 0
+      2048   4.00       100                 0
+      3072   6.00       100                 0
+      4096   8.00       100                 0
+== 4 · Áreas de trabajo desde el arranque: en memoria (optimal), una pasada y varias ==
+
+NAME                      VALUE
+-------------------- ----------
+workarea executions  ##########
+- optimal
+
+workarea executions  ##########
+- onepass
+
+workarea executions  ##########
+- multipass
+

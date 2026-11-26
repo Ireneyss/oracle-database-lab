@@ -1,0 +1,38 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+System altered.
+
+Session altered.
+
+== La versión de LITERALES otra vez, ahora con CURSOR_SHARING = FORCE en la sesión ... ==
+
+PL/SQL procedure successfully completed.
+
+Session altered.
+
+MODO       LLAMADAS   MS_TOTAL HARD_PARSES MS_POR_FICHA
+-------- ---------- ---------- ----------- ------------
+LITERAL        5000       4790        5043         .958
+FORCE          5000        360          24         .072
+BIND           5000        180          24         .036
+
+3 rows selected.
+
+== El texto que ha guardado Oracle: el literal se ha convertido en una variable del sistema ==
+
+SQL_ID        EXECUTIONS SQL_TEXT
+------------- ---------- ------------------------------------------------------------------------------------------
+bba34k3qhx6j7       5000 SELECT /* t6_ficha */ nombre, ciudad FROM t6.cliente WHERE id_cliente = :"SYS_B_0"
+
+1 row selected.
+
+== Lo que debes retener ==
+1. Síntoma de literales: CPU y «hard parse elapsed time» altos, miles de SQL_ID con 1 ejecución y la misma FIRMA.
+2. La cura está en la aplicación: variables de enlace. Menos CPU, menos latches y una shared pool estable.
+3. CURSOR_SHARING = FORCE es un parche (se pone por sesión, servicio o PDB): alivia, pero cambia todos los literales
+(también los que dan selectividad al optimizador) y oculta el defecto. Se documenta y se retira cuando llega la cura.

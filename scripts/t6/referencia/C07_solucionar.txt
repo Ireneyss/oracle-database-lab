@@ -1,0 +1,47 @@
+[APP] 
+[APP] T6_APP> SET ECHO OFF
+[APP] 
+[APP] PL/SQL procedure successfully completed.
+[APP] 
+[DBA] 
+[DBA] SYS> ALTER SESSION SET CONTAINER = FREEPDB1;
+[DBA] 
+[DBA] Session altered.
+[DBA] 
+[DBA] SYS> SET SERVEROUTPUT OFF LINESIZE 170
+[DBA] SYS> SELECT plan_table_output FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(
+[DBA]   2    (SELECT sql_id FROM v$sql WHERE sql_text LIKE 'SELECT /*+ t6_cp_v2 */%' AND ROWNUM = 1), NULL, 'TYPICAL -BYTES'));
+[DBA] 
+[DBA] PLAN_TABLE_OUTPUT
+[DBA] ------------------------------------------------------------------------------------------------------------------------------------------------------
+[DBA] SQL_ID  53mx77snb43uw, child number 0
+[DBA] -------------------------------------
+[DBA] SELECT /*+ t6_cp_v2 */ COUNT(*), SUM(IMPORTE) FROM T6.PEDIDO WHERE
+[DBA] CODIGO_POSTAL = :B1
+[DBA] 
+[DBA] Plan hash value: 2982358210
+[DBA] 
+[DBA] ---------------------------------------------------------------------------------------------
+[DBA] | Id  | Operation                            | Name         | Rows  | Cost (%CPU)| Time     |
+[DBA] ---------------------------------------------------------------------------------------------
+[DBA] |   0 | SELECT STATEMENT                     |              |       |    94 (100)|          |
+[DBA] |   1 |  SORT AGGREGATE                      |              |     1 |            |          |
+[DBA] |   2 |   TABLE ACCESS BY INDEX ROWID BATCHED| PEDIDO       |    91 |    94   (0)| 00:00:01 |
+[DBA] |*  3 |    INDEX RANGE SCAN                  | IX_T6_PED_CP |    91 |     3   (0)| 00:00:01 |
+[DBA] ---------------------------------------------------------------------------------------------
+[DBA] 
+[DBA] Predicate Information (identified by operation id):
+[DBA] ---------------------------------------------------
+[DBA] 
+[DBA]    3 - access("CODIGO_POSTAL"=:B1)
+[DBA] 
+[DBA] Hint Report (identified by operation id / Query Block Name / Object Alias):
+[DBA] Total hints for statement: 1 (E - Syntax error (1))
+[DBA] ---------------------------------------------------------------------------
+[DBA] 
+[DBA]    1 -  SEL$1
+[DBA]          E -  t6_cp_v2
+[DBA] 
+[DBA] 28 rows selected.
+[DBA] 
+[DBA] SYS> EXIT

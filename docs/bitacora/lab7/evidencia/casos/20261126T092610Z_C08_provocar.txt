@@ -1,0 +1,17 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T09:26:10Z origen=t6/C08_provocar
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7406447
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF SERVEROUTPUT OFF
+
+PL/SQL procedure successfully completed.
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+Listado ejecutado: 599 filas
+
+1 row selected.
+

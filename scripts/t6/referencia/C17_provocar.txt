@@ -1,0 +1,20 @@
+
+==================== Línea base del incidente: instantánea AWR, la web en producción (V1) y otra instantánea ====================
+
+-- Instantánea AWR inicial
+V1_INI=42
+   carga C17_V1: 3 sesiones de la aplicación durante 120 s ...
+grep: /tmp/t6_carga_C17_V1_*.log: No such file or directory
+   carga C17_V1 terminada
+
+-- Instantánea AWR final
+V1_FIN=44
+
+-- Hecho. Atención al cliente ha abierto el INC-604. Siguiente fase: caso C17 entender
+
+-- Línea base ANTES de tocar nada (runbook RB-1): t6 base registrar ANTES SQL_ID C17
+== Líneas base registradas (T6.LINEA_BASE) ==
+HORA     CASO ETIQUETA             SQL_ID         PLAN_HASH       EJEC     MS_EJEC  GETS_EJEC FILAS_EJEC MEJORA
+-------- ---- -------------------- ------------- ---------- ---------- ----------- ---------- ---------- ----------
+15:04:58 C17  ANTES                0dbx7196jdajy 2571571058       1388      139.13       5231          1 x1.0
+15:06:33 C17  ANTES                0dbx7196jdajy 2571571058       3549      117.17       5242          1 x1.2

@@ -1,0 +1,37 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO ON
+SYS@FREE> DROP TRIGGER t6.c04_legado;
+
+Trigger dropped.
+
+SYS@FREE> SET ECHO OFF
+== 1 · El mismo informe completo, ahora con la PGA automática ==
+Connected.
+
+PL/SQL procedure successfully completed.
+
+Connected.
+
+Session altered.
+
+== 2 · El informe que de verdad necesita la pantalla: las 100 primeras filas ==
+Connected.
+
+PL/SQL procedure successfully completed.
+
+Connected.
+
+Session altered.
+
+MODO                FILAS         MS TEMP_ESCRITOS TEMP_LEIDOS POLITICA
+-------------- ---------- ---------- ------------- ----------- ----------
+LEGADO            1000000       1230          5456        5456 MANUAL
+AUTO_COMPLETO     1000000        950             0           0 AUTO
+AUTO_TOP100           100        110             0           0 AUTO
+
+3 rows selected.
+

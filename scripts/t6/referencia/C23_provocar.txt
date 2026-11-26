@@ -1,0 +1,5 @@
+Índices de PEDIDO ahora: 7
+
+==================== La web trabaja 30 s (fichas y búsquedas por código postal) para que haya uso que registrar ====================
+   carga C23_WEB: 2 sesiones de la aplicación durante 30 s ...
+   carga C23_WEB terminada

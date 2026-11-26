@@ -1,0 +1,22 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+ETQ               INDICES         MS    REDO_MB
+-------------- ---------- ---------- ----------
+SEIS_INDICES            6       1650       99.4
+CINCO_INDICES           5       1750       90.5
+UNUSABLE+RB             5        730
+SIN_INDICES             0         50        4.4
+
+4 rows selected.
+
+== Lo que debes retener ==
+1. Cada índice acelera algunas lecturas y frena TODAS las escrituras de la tabla: se justifica con la consulta que sirve.
+2. Un índice cuyo prefijo coincide con otro (ESTADO frente a ESTADO, FECHA_PEDIDO) suele sobrar: t6 indices TABLA.
+3. Para cargas masivas: UNUSABLE + carga + REBUILD (o carga directa con /*+ APPEND */). Nunca con índices de PK o UNIQUE
+que deban seguir validando duplicados durante la carga.
+4. Antes de borrar uno que «nadie usa»: DBA_INDEX_USAGE e INVISIBLE una temporada (casos C14 y C23).

@@ -1,0 +1,50 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+PL/SQL procedure successfully completed.
+
+User created.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Grant succeeded.
+
+Table created.
+
+Grant succeeded.
+
+SYS@FREE> CREATE OR REPLACE TRIGGER t6.c04_legado AFTER LOGON ON t6_inf.SCHEMA
+  2  BEGIN
+  3    EXECUTE IMMEDIATE 'ALTER SESSION SET workarea_size_policy = MANUAL';
+  4    EXECUTE IMMEDIATE 'ALTER SESSION SET sort_area_size = 1048576';
+  5  END;
+  6  /
+
+Trigger created.
+
+SYS@FREE> SET ECHO OFF
+== El ranking de 1 000 000 de pedidos por importe, como lo lanza la herramienta de informes ... ==
+Connected.
+
+PL/SQL procedure successfully completed.
+
+Connected.
+
+Session altered.
+
+MODO                FILAS         MS TEMP_ESCRITOS TEMP_LEIDOS POLITICA
+-------------- ---------- ---------- ------------- ----------- ----------
+LEGADO            1000000       1230          5456        5456 MANUAL
+
+1 row selected.
+

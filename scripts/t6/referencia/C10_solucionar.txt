@@ -1,0 +1,48 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET SERVEROUTPUT OFF FEEDBACK OFF
+SYS@FREE> VARIABLE e VARCHAR2(1)
+SYS@FREE> EXEC :e := 'C'
+SYS@FREE> SELECT /* t6_c10 */ COUNT(*), SUM(importe) FROM t6.pedido WHERE estado = :e;
+
+  COUNT(*) SUM(IMPORTE)
+---------- ------------
+    901993    230011758
+SYS@FREE> SELECT /* t6_c10 */ COUNT(*), SUM(importe) FROM t6.pedido WHERE estado = :e;
+
+  COUNT(*) SUM(IMPORTE)
+---------- ------------
+    901993    230011758
+SYS@FREE> SELECT /* t6_c10 */ COUNT(*), SUM(importe) FROM t6.pedido WHERE estado = :e;
+
+  COUNT(*) SUM(IMPORTE)
+---------- ------------
+    901993    230011758
+SYS@FREE> SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(format => 'BASIC +PEEKED_BINDS +ROWS'));
+
+PLAN_TABLE_OUTPUT
+----------------------------------------------------------------------------------------------------------------------------------
+EXPLAINED SQL STATEMENT:
+------------------------
+SELECT /* t6_c10 */ COUNT(*), SUM(importe) FROM t6.pedido WHERE estado
+= :e
+
+Plan hash value: 2571571058
+
+---------------------------------------------
+| Id  | Operation          | Name   | Rows  |
+---------------------------------------------
+|   0 | SELECT STATEMENT   |        |       |
+|   1 |  SORT AGGREGATE    |        |     1 |
+|   2 |   TABLE ACCESS FULL| PEDIDO |   901K|
+---------------------------------------------
+
+Peeked Binds (identified by position):
+--------------------------------------
+
+   1 - :E (VARCHAR2(30), CSID=873): 'C'
+
+SYS@FREE> EXIT

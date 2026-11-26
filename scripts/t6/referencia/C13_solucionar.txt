@@ -1,0 +1,77 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET SERVEROUTPUT OFF
+SYS@FREE> COLUMN tipo FORMAT A10
+SYS@FREE> PROMPT == 1 · Recoger como PENDIENTES (PUBLISH = FALSE): nadie las usa todavía ==
+== 1 · Recoger como PENDIENTES (PUBLISH = FALSE): nadie las usa todavía ==
+SYS@FREE> EXEC DBMS_STATS.SET_TABLE_PREFS('T6', 'PEDIDO', 'PUBLISH', 'FALSE')
+
+PL/SQL procedure successfully completed.
+
+SYS@FREE> EXEC DBMS_STATS.GATHER_TABLE_STATS('T6', 'PEDIDO', method_opt => 'FOR ALL COLUMNS SIZE 1 FOR COLUMNS estado SIZE 254')
+
+PL/SQL procedure successfully completed.
+
+SYS@FREE> SELECT 'publicadas' AS tipo, num_rows, last_analyzed FROM dba_tab_statistics WHERE owner = 'T6' AND table_name = 'PEDIDO'
+  2  UNION ALL
+  3  SELECT 'pendientes', num_rows, last_analyzed FROM dba_tab_pending_stats WHERE owner = 'T6' AND table_name = 'PEDIDO' AND partition_name IS NULL;
+
+TIPO         NUM_ROWS LAST_ANALYZED
+---------- ---------- -------------------
+publicadas    1000000 2026-11-25 14:20:28
+pendientes    1000000 2026-11-25 14:20:37
+
+2 rows selected.
+
+SYS@FREE> PROMPT == 2 · Probarlas SOLO en esta sesión ==
+== 2 · Probarlas SOLO en esta sesión ==
+SYS@FREE> DELETE FROM plan_table;
+
+0 rows deleted.
+
+SYS@FREE> ALTER SESSION SET optimizer_use_pending_statistics = TRUE;
+
+Session altered.
+
+SYS@FREE> EXPLAIN PLAN FOR SELECT * FROM t6.pedido WHERE estado = 'E';
+
+Explained.
+
+SYS@FREE> SELECT cardinality AS estimadas_con_pendientes FROM plan_table WHERE id = 1;
+
+ESTIMADAS_CON_PENDIENTES
+------------------------
+                  185277
+
+1 row selected.
+
+SYS@FREE> ALTER SESSION SET optimizer_use_pending_statistics = FALSE;
+
+Session altered.
+
+SYS@FREE> ROLLBACK;
+
+Rollback complete.
+
+SYS@FREE> PROMPT == 3 · La prueba es buena: publicar, y la preferencia vuelve a TRUE ==
+== 3 · La prueba es buena: publicar, y la preferencia vuelve a TRUE ==
+SYS@FREE> EXEC DBMS_STATS.PUBLISH_PENDING_STATS('T6', 'PEDIDO')
+
+PL/SQL procedure successfully completed.
+
+SYS@FREE> EXEC DBMS_STATS.SET_TABLE_PREFS('T6', 'PEDIDO', 'PUBLISH', 'TRUE')
+
+PL/SQL procedure successfully completed.
+
+SYS@FREE> SELECT num_rows, last_analyzed, stale_stats FROM dba_tab_statistics WHERE owner = 'T6' AND table_name = 'PEDIDO';
+
+  NUM_ROWS LAST_ANALYZED       STALE
+---------- ------------------- -----
+   1000000 2026-11-25 14:20:37 NO
+
+1 row selected.
+
+SYS@FREE> EXIT

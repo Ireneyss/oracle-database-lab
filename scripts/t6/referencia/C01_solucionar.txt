@@ -1,0 +1,37 @@
+
+==================== Pool dimensionado: 2 sesiones de la aplicación (CPU_COUNT = 2) durante 40 s ====================
+   carga C01_N2: 2 sesiones de la aplicación durante 40 s ...
+   carga C01_N2 terminada
+
+==================== Línea base de la sentencia del panel (lo que se anota ANTES de tocar el SQL): t6 base registrar ====================
+   SQL_ID del panel de ventas: 1sn1a6j3ygm4g
+[DBA] 
+[DBA] SYS> ALTER SESSION SET CONTAINER = FREEPDB1;
+[DBA] 
+[DBA] Session altered.
+[DBA] 
+[DBA] SYS> DELETE FROM t6.linea_base WHERE caso = 'C01';
+[DBA] 
+[DBA] 0 rows deleted.
+[DBA] 
+[DBA] SYS> INSERT INTO t6.linea_base (caso, etiqueta, sql_id, plan_hash, ejecuciones, ms_ejec, cpu_ms_ejec, gets_ejec, filas_ejec, nota)
+[DBA]   2  SELECT 'C01', 'panel tras C01', sql_id, plan_hash_value, executions,
+[DBA]   3         ROUND(elapsed_time / executions / 1000, 2), ROUND(cpu_time / executions / 1000, 2),
+[DBA]   4         ROUND(buffer_gets / executions), ROUND(rows_processed / executions), 'pool de 2 sesiones'
+[DBA]   5    FROM v$sqlstats WHERE sql_id = '1sn1a6j3ygm4g';
+[DBA] 
+[DBA] 1 row created.
+[DBA] 
+[DBA] SYS> COMMIT;
+[DBA] 
+[DBA] Commit complete.
+[DBA] 
+[DBA] SYS> SELECT caso, etiqueta, sql_id, plan_hash, ejecuciones, ms_ejec, cpu_ms_ejec, gets_ejec FROM t6.linea_base WHERE caso = 'C01';
+[DBA] 
+[DBA] CASO ETIQUETA                       SQL_ID         PLAN_HASH EJECUCIONES    MS_EJEC CPU_MS_EJEC  GETS_EJEC
+[DBA] ---- ------------------------------ ------------- ---------- ----------- ---------- ----------- ----------
+[DBA] C01  panel tras C01                 1sn1a6j3ygm4g 3489591789         788     535.91      233.28       2103
+[DBA] 
+[DBA] 1 row selected.
+[DBA] 
+[DBA] SYS> EXIT

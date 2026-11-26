@@ -1,0 +1,49 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET SERVEROUTPUT OFF LINESIZE 160
+SYS@FREE> SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(
+  2    (SELECT sql_id FROM v$sql WHERE sql_text LIKE 'SELECT /*+ GATHER_PLAN_STATISTICS t6_c11%' AND ROWNUM = 1), NULL, 'IOSTATS LAST +ADAPTIVE'));
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL_ID  ac7t9bmfav6u0, child number 0
+-------------------------------------
+SELECT /*+ GATHER_PLAN_STATISTICS t6_c11 */ c.id_cliente, p.id_pedido,
+p.importe   FROM t6.cliente c JOIN t6.pedido p ON p.id_cliente =
+c.id_cliente WHERE c.ciudad = 'Lorca'
+
+Plan hash value: 2405883318
+
+-------------------------------------------------------------------------------------------------------------------------
+|   Id  | Operation                               | Name              | Starts | E-Rows | A-Rows |   A-Time   | Buffers |
+-------------------------------------------------------------------------------------------------------------------------
+|     0 | SELECT STATEMENT                        |                   |      1 |        |    937 |00:00:00.01 |    1366 |
+|- *  1 |  HASH JOIN                              |                   |      1 |    496 |    937 |00:00:00.01 |    1366 |
+|     2 |   NESTED LOOPS                          |                   |      1 |    496 |    937 |00:00:00.01 |    1366 |
+|     3 |    NESTED LOOPS                         |                   |      1 |    500 |    937 |00:00:00.01 |     430 |
+|-    4 |     STATISTICS COLLECTOR                |                   |      1 |        |    100 |00:00:00.01 |     102 |
+|     5 |      TABLE ACCESS BY INDEX ROWID BATCHED| CLIENTE           |      1 |     50 |    100 |00:00:00.01 |     102 |
+|  *  6 |       INDEX RANGE SCAN                  | IX_T6_CLI_CIUDAD  |      1 |     50 |    100 |00:00:00.01 |       2 |
+|  *  7 |     INDEX RANGE SCAN                    | IX_T6_PED_CLIENTE |    100 |     10 |    937 |00:00:00.01 |     328 |
+|     8 |    TABLE ACCESS BY INDEX ROWID          | PEDIDO            |    937 |     10 |    937 |00:00:00.01 |     936 |
+|-    9 |   TABLE ACCESS FULL                     | PEDIDO            |      0 |     10 |      0 |00:00:00.01 |       0 |
+-------------------------------------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   1 - access("P"."ID_CLIENTE"="C"."ID_CLIENTE")
+   6 - access("C"."CIUDAD"='Lorca')
+   7 - access("P"."ID_CLIENTE"="C"."ID_CLIENTE")
+
+Note
+-----
+   - this is an adaptive plan (rows marked '-' are inactive)
+
+34 rows selected.
+
+SYS@FREE> SET ECHO OFF
+-- Lectura: las líneas marcadas con «-» son el camino descartado. Las que tienen Starts > 0 son las que se ejecutaron.

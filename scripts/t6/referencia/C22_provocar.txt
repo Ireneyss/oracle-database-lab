@@ -1,0 +1,7 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF SERVEROUTPUT OFF
+Hecho: carga con ordenaciones y agregados grandes. Siguiente fase: caso C22 entender

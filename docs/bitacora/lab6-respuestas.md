@@ -42,7 +42,7 @@ Evidencia: `script/20261119T112541Z_02-parametros.script.log`, secciones 4 y 5.
 
 `RESET` borra la línea del parámetro en el SPFILE y lo devuelve a su valor por defecto. Para `db_files` era la vuelta atrás correcta porque nunca se había fijado: en la copia de seguridad que hice antes de tocar nada (el PFILE creado desde el SPFILE) **no hay ninguna línea `*.db_files`**, así que «sin fijar» era exactamente el estado original. Para `processes` no lo habría sido, porque en esa misma copia está la línea **`*.processes=200`**: alguien lo fijó a propósito. Un `RESET` quitaría esa línea y Oracle usaría su valor por defecto, que no tiene por qué ser 200, así que no volvería al estado anterior. La vuelta atrás correcta para `processes` sería `ALTER SYSTEM SET processes = 200 SCOPE = SPFILE`.
 
-Evidencia: `config/20261119T112542Z_02-init_desde_spfile.ora` (línea `*.processes=200`, sin línea de `db_files`) y `script/20261119T112541Z_02-parametros.script.log`, sección 6.
+Evidencia: `config/20261119T112542Z_02-init_desde_spfile.ora.txt` (línea `*.processes=200`, sin línea de `db_files`) y `script/20261119T112541Z_02-parametros.script.log`, sección 6.
 
 ### Pregunta 5
 
@@ -194,7 +194,7 @@ Evidencia: `script/20261119T165700Z_08-inc601.script.log`, `script/20261119T1703
 |---|---|---|
 | S1 | B | Parte F: umbral de alerta de TBS_ACADEMIA_HIST (lo vigila MMON) |
 | S2 | C | Parte C: sort_area_size es DEFERRED |
-| S3 | B | Parte C: init_desde_memoria.ora (126 líneas frente a 35) |
+| S3 | B | Parte C: init_desde_memoria.ora.txt (126 líneas frente a 35) |
 | S4 | B, C | Parte C: OPEN READ WRITE sobre una PDB ya abierta dio ORA-65019 |
 | S5 | C | Parte C: estado guardado de FREEPDB1 (SAVE STATE) |
 | S6 | B | Parte C: C.2 sección 3, C##OPS_RO recibió ORA-01035 con FREEPDB1 en RESTRICTED |

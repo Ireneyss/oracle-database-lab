@@ -1,0 +1,35 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+PL/SQL procedure successfully completed.
+
+  NUM_ROWS LAST_ANALYZED       STALE STATT
+---------- ------------------- ----- -----
+   1000000 2026-11-25 14:20:28 YES
+
+1 row selected.
+
+   INSERTS    UPDATES    DELETES
+---------- ---------- ----------
+         0     135277          0
+
+1 row selected.
+
+COLUMN_NAME      NUM_DISTINCT HISTOGRAM
+---------------- ------------ ---------------
+ESTADO                      4 NONE
+
+1 row selected.
+
+PREFERENCE_NAME        PREFERENCE_VALUE
+---------------------- ------------------------------
+PUBLISH                TRUE
+
+1 row selected.
+
+-- Lectura: STALE = YES y ESTADO sin histograma. Recoger ya es correcto... pero publicar a ciegas en hora punta
+-- cambia los planes de TODA la aplicación a la vez. El runbook RB-2: pendientes → probar → publicar (→ restaurar).

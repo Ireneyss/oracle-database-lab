@@ -1,0 +1,11 @@
+
+==================== Lunes: el informe de pendientes con el histograma de ESTADO (y AWR guardando lo que pasa) ====================
+LUNES        plan 1767728868  188 lecturas/ejecución  4.9 ms  línea base: (ninguna)
+
+==================== Noche: la tarea de estadísticas recoge PEDIDO con las preferencias de la tabla (SIZE 1: sin histograma) ====================
+Preferencia METHOD_OPT de PEDIDO: FOR ALL COLUMNS SIZE 1
+
+==================== Martes: el mismo informe ====================
+MARTES       plan 2571571058  5227 lecturas/ejecución  26.5 ms  línea base: (ninguna)
+
+-- Hecho. Los de finanzas dicen que «el informe de pendientes tarda más desde hoy». Siguiente fase: caso C18 entender

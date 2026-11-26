@@ -1,0 +1,12 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    Existe el grupo de columnas (CIUDAD, COMUNIDAD) en T6.CLIENTE
+OK    La estimación de clientes es ahora 50 (reales: 56)
+OK    Antes, la estimación era 3 (el error que había que encontrar)

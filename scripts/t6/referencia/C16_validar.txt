@@ -1,0 +1,12 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF FEEDBACK OFF
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+OK    Existe el índice basado en función IX_T6_CLI_EMAIL_UP
+OK    La búsqueda de la web usa el índice nuevo
+OK    Lecturas lógicas por búsqueda: 4 frente a 1377

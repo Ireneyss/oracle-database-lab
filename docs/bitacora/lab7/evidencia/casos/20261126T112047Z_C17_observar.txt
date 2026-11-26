@@ -1,0 +1,44 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T11:20:48Z origen=t6/C17_observar
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7430773
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF LINESIZE 160
+
+VERSION SQL_ID        PLAN_HASH_VALUE EJECUCIONES MS_POR_EJEC GETS_POR_EJEC
+------- ------------- --------------- ----------- ----------- -------------
+V1      0dbx7196jdajy      2571571058        4048       61.69          5125
+V2      53mx77snb43uw      2982358210       31000         .47            94
+
+2 rows selected.
+
+== El plan de la V1, guardado en AWR (sirve aunque el cursor ya no esté en memoria) ==
+-- En una PDB: awr_location => 'AWR_PDB'. Sin él se lee el AWR de la raíz y no sale nada.
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL_ID 0dbx7196jdajy
+--------------------
+SELECT /*+ t6_cp_v1 */ COUNT(*), SUM(IMPORTE) FROM T6.PEDIDO WHERE
+CODIGO_POSTAL = :B1
+
+Plan hash value: 2571571058
+
+----------------------------------------------------------
+| Id  | Operation          | Name   | Rows  | Cost (%CPU)|
+----------------------------------------------------------
+|   0 | SELECT STATEMENT   |        |       |  1449 (100)|
+|   1 |  SORT AGGREGATE    |        |     1 |            |
+|   2 |   TABLE ACCESS FULL| PEDIDO |    91 |  1449   (1)|
+----------------------------------------------------------
+
+15 rows selected.
+
+== Lo que debes retener (método de los 8 pasos, playbook PB-2) ==
+1. Definir: el síntoma en SLI y SLO (p95 < 20 ms), no en adjetivos. Línea base ANTES de tocar nada (t6 base, t6 awr snap).
+2. De lo general a lo concreto: ASH dice quién y en qué; AWR, qué SQL del intervalo; ADDM lo cuantifica; el plan, por qué.
+3. UN solo cambio y la MISMA carga para medir: así la mejora tiene una causa demostrable.
+4. La evidencia del cierre: AWR antes y después del mismo SQL (deltas), no una impresión.
+5. Variante de examen: ADDM propone «SQL Tuning Advisor» o un índice; la causa real era el tipo de dato (caso C21).

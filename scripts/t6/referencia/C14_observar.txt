@@ -1,0 +1,23 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF SERVEROUTPUT ON
+Redo de cambiar el canal de 20 000 pedidos: sin mantener el índice 9007 KB · índice INVISIBLE 10402 KB · índice VISIBLE 10402 KB
+
+PL/SQL procedure successfully completed.
+
+INDEX_NAME           VISIBILIT STATUS
+-------------------- --------- ----------
+IX_T6_C14_PEND       VISIBLE   VALID
+
+1 row selected.
+
+== Lo que debes retener ==
+1. INVISIBLE cuesta lo mismo que VISIBLE al escribir: el optimizador no lo usa, pero cada DML lo mantiene (caso C15).
+2. La prueba se hace con optimizer_use_invisible_indexes = TRUE en UNA sesión: nadie más cambia de plan.
+3. Marcha atrás inmediata y sin reconstruir: ALTER INDEX ... INVISIBLE. Borrar es la última decisión.
+4. Orden de columnas: primero las de igualdad (estado, canal) y después la de rango (fecha_pedido).
+5. Variante de examen: un índice que se va a borrar se pone antes INVISIBLE una semana y se vigila DBA_INDEX_USAGE
+(t6 indices PEDIDO). Runbook RB-3.

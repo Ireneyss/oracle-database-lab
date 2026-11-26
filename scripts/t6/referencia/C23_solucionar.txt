@@ -1,0 +1,59 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET SERVEROUTPUT OFF LINESIZE 160
+SYS@FREE> PROMPT == 1 · La consulta del historial del cliente ya usa el índice que existe ==
+== 1 · La consulta del historial del cliente ya usa el índice que existe ==
+SYS@FREE> SET TERMOUT OFF
+SYS@FREE> SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(format => 'BASIC +PREDICATE'));
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+EXPLAINED SQL STATEMENT:
+------------------------
+SELECT /*+ GATHER_PLAN_STATISTICS t6_c23_historial */ id_pedido,
+fecha_pedido, importe FROM t6.pedido  WHERE id_cliente = 4242 AND
+fecha_pedido >= DATE '2026-01-01' ORDER BY fecha_pedido
+
+Plan hash value: 924638327
+
+--------------------------------------------------------
+| Id  | Operation                   | Name             |
+--------------------------------------------------------
+|   0 | SELECT STATEMENT            |                  |
+|   1 |  TABLE ACCESS BY INDEX ROWID| PEDIDO           |
+|*  2 |   INDEX RANGE SCAN          | IX_C23_CLI_FECHA |
+--------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   2 - access("ID_CLIENTE"=4242 AND "FECHA_PEDIDO">=TIMESTAMP'
+              2026-01-01 00:00:00')
+
+22 rows selected.
+
+SYS@FREE> PROMPT == 2 · El índice de una sola columna queda cubierto por el compuesto: se hace INVISIBLE (no se borra aún) ==
+== 2 · El índice de una sola columna queda cubierto por el compuesto: se hace INVISIBLE (no se borra aún) ==
+SYS@FREE> ALTER INDEX t6.ix_t6_ped_cliente INVISIBLE;
+
+Index altered.
+
+SYS@FREE> PROMPT == 3 · ¿Sigue la FK protegida? Borrar un cliente necesita un índice que empiece por ID_CLIENTE: lo da el compuesto ==
+== 3 · ¿Sigue la FK protegida? Borrar un cliente necesita un índice que empiece por ID_CLIENTE: lo da el compuesto ==
+SYS@FREE> EXPLAIN PLAN FOR DELETE FROM t6.cliente WHERE id_cliente = -1;
+
+Explained.
+
+SYS@FREE> SELECT index_name, visibility FROM dba_indexes WHERE owner = 'T6' AND index_name IN ('IX_T6_PED_CLIENTE', 'IX_C23_CLI_FECHA');
+
+INDEX_NAME           VISIBILIT
+-------------------- ---------
+IX_C23_CLI_FECHA     VISIBLE
+IX_T6_PED_CLIENTE    INVISIBLE
+
+2 rows selected.
+
+SYS@FREE> EXIT

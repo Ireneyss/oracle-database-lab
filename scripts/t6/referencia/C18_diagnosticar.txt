@@ -1,0 +1,102 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET LINESIZE 160 SERVEROUTPUT OFF
+SYS@FREE> PROMPT == El plan de hoy (cursor en memoria) ==
+== El plan de hoy (cursor en memoria) ==
+SYS@FREE> SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(
+  2    (SELECT sql_id FROM v$sql WHERE sql_text LIKE 'SELECT /* t6_c18_pendientes */%' AND ROWNUM = 1),
+  3    (SELECT MAX(child_number) FROM v$sql WHERE sql_text LIKE 'SELECT /* t6_c18_pendientes */%' AND is_shareable = 'Y'), 'BASIC +ROWS +COST'));
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+EXPLAINED SQL STATEMENT:
+------------------------
+SELECT /* t6_c18_pendientes */ COUNT(*), SUM(importe),
+MAX(fecha_pedido) FROM t6.pedido WHERE estado = 'P'
+
+Plan hash value: 2571571058
+
+----------------------------------------------------------
+| Id  | Operation          | Name   | Rows  | Cost (%CPU)|
+----------------------------------------------------------
+|   0 | SELECT STATEMENT   |        |       |  1458 (100)|
+|   1 |  SORT AGGREGATE    |        |     1 |            |
+|   2 |   TABLE ACCESS FULL| PEDIDO |   250K|  1458   (2)|
+----------------------------------------------------------
+
+15 rows selected.
+
+SYS@FREE> PROMPT == Los planes que AWR conoce de este SQL (el del lunes sigue ahí) ==
+== Los planes que AWR conoce de este SQL (el del lunes sigue ahí) ==
+SYS@FREE> SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_WORKLOAD_REPOSITORY(
+  2    sql_id => (SELECT sql_id FROM v$sql WHERE sql_text LIKE 'SELECT /* t6_c18_pendientes */%' AND ROWNUM = 1),
+  3    format => 'BASIC +ROWS +COST', awr_location => 'AWR_PDB'));
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL_ID 8hn59jfgw00y7
+--------------------
+SELECT /* t6_c18_pendientes */ COUNT(*), SUM(importe),
+MAX(fecha_pedido) FROM t6.pedido WHERE estado = 'P'
+
+Plan hash value: 1767728868
+
+--------------------------------------------------------------------------------------
+| Id  | Operation                            | Name             | Rows  | Cost (%CPU)|
+--------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                     |                  |       |   241 (100)|
+|   1 |  SORT AGGREGATE                      |                  |     1 |            |
+|   2 |   TABLE ACCESS BY INDEX ROWID BATCHED| PEDIDO           | 20000 |   241   (0)|
+|   3 |    INDEX RANGE SCAN                  | IX_T6_PED_ESTADO | 20000 |    39   (0)|
+--------------------------------------------------------------------------------------
+
+SQL_ID 8hn59jfgw00y7
+--------------------
+SELECT /* t6_c18_pendientes */ COUNT(*), SUM(importe),
+MAX(fecha_pedido) FROM t6.pedido WHERE estado = 'P'
+
+Plan hash value: 2571571058
+
+----------------------------------------------------------
+| Id  | Operation          | Name   | Rows  | Cost (%CPU)|
+----------------------------------------------------------
+|   0 | SELECT STATEMENT   |        |       |  1458 (100)|
+|   1 |  SORT AGGREGATE    |        |     1 |            |
+|   2 |   TABLE ACCESS FULL| PEDIDO |   250K|  1458   (2)|
+----------------------------------------------------------
+
+31 rows selected.
+
+SYS@FREE> PROMPT == Lo que cambió: el histograma de ESTADO ha desaparecido en la recogida nocturna ==
+== Lo que cambió: el histograma de ESTADO ha desaparecido en la recogida nocturna ==
+SYS@FREE> COLUMN column_name FORMAT A12
+SYS@FREE> SELECT column_name, num_distinct, histogram, TO_CHAR(last_analyzed, 'HH24:MI:SS') AS analizada
+  2    FROM dba_tab_col_statistics WHERE owner = 'T6' AND table_name = 'PEDIDO' AND column_name = 'ESTADO';
+
+COLUMN_NAME  NUM_DISTINCT HISTOGRAM       ANALIZAD
+------------ ------------ --------------- --------
+ESTADO                  4 NONE            14:26:00
+
+1 row selected.
+
+SYS@FREE> SELECT TO_CHAR(stats_update_time, 'YYYY-MM-DD HH24:MI:SS') AS recogidas FROM dba_tab_stats_history
+  2   WHERE owner = 'T6' AND table_name = 'PEDIDO' ORDER BY stats_update_time DESC FETCH FIRST 3 ROWS ONLY;
+
+RECOGIDAS
+-------------------
+2026-11-25 14:26:01
+2026-11-25 14:25:51
+2026-11-25 14:20:48
+
+3 rows selected.
+
+SYS@FREE> PROMPT -- Lectura: sin histograma, ESTADO = 'P' se estima en 1/4 de la tabla (250 000) y el optimizador prefiere
+-- Lectura: sin histograma, ESTADO = 'P' se estima en 1/4 de la tabla (250 000) y el optimizador prefiere
+SYS@FREE> PROMPT -- recorrerla entera. Con histograma sabe que son 20 000 y usa el índice. Arreglar las estadísticas es una
+-- recorrerla entera. Con histograma sabe que son 20 000 y usa el índice. Arreglar las estadísticas es una
+SYS@FREE> PROMPT -- solución (C13); SPM es la otra: que el plan probado no se pierda aunque el entorno vuelva a cambiar.
+-- solución (C13); SPM es la otra: que el plan probado no se pierda aunque el entorno vuelva a cambiar.
+SYS@FREE> EXIT

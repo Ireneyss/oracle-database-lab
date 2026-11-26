@@ -1,0 +1,19 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET ECHO OFF
+
+NAME                                 VALUE
+------------------------------------ ----------
+optimizer_adaptive_reporting_only    FALSE
+optimizer_adaptive_plans             TRUE
+optimizer_adaptive_statistics        FALSE
+
+3 rows selected.
+
+== Lo que debes retener ==
+1. Plan adaptativo: el optimizador deja preparados NESTED LOOPS y HASH JOIN y decide con las filas reales.
+2. Se lee con DISPLAY_CURSOR(format => '+ADAPTIVE'): «-» = línea inactiva. IS_RESOLVED_ADAPTIVE_PLAN = Y.
+3. Solo decide la primera ejecución: las siguientes reutilizan el plan final (no es un plan que cambie siempre).

@@ -1,0 +1,24 @@
+
+SYS@FREE> SET ECHO OFF
+
+NAME                           MB
+---------------------- ----------
+memory_target                   0
+pga_aggregate_limit          2048
+pga_aggregate_target          512
+sga_max_size                 1536
+sga_target                   1536
+
+5 rows selected.
+
+COMPONENT                            MB
+---------------------------- ----------
+DEFAULT buffer cache                704
+shared pool                         576
+java pool                           128
+Shared IO Pool                       80
+large pool                           16
+
+5 rows selected.
+
+-- Lectura: Oracle Free limita la SGA a 2 GB. Antes de pedir memoria hay que demostrar que serviría: los asesores.

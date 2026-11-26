@@ -1,0 +1,37 @@
+== 1 · Índices de T6.PEDIDO ==
+
+INDEX_NAME           COLUMNAS                       STATUS     VISIBLE   LEAF_BLOCKS DISTINCT_KEYS CLUSTERING_FACTOR CF PARECE
+-------------------- ------------------------------ ---------- --------- ----------- ------------- ----------------- ------------
+IX_C23_CLI_FECHA     ID_CLIENTE, FECHA_PEDIDO       VALID      VISIBLE          3331       1000000            999041 A FILAS
+IX_T6_C14_PEND       ESTADO, CANAL, FECHA_PEDIDO    VALID      VISIBLE          3305       1000000             26665 INTERMEDIO
+IX_T6_PED_CLIENTE    ID_CLIENTE                     VALID      VISIBLE          2216        100816            999041 A FILAS
+IX_T6_PED_CP         CODIGO_POSTAL                  VALID      VISIBLE          2370         11000            991398 A FILAS
+IX_T6_PED_ESTADO     ESTADO                         VALID      VISIBLE          1814             4             10065 A BLOQUES
+IX_T6_PED_FECHA      FECHA_PEDIDO                   VALID      VISIBLE          2653        995008              5220 A BLOQUES
+PK_T6_PEDIDO         ID_PEDIDO                      VALID      VISIBLE          2088       1000000              5220 A BLOQUES
+== 2 · Redundancia: índices cuyas columnas son el principio de otro índice ==
+
+REDUNDANTE           COLUMNAS                       CUBIERTO_POR
+-------------------- ------------------------------ --------------------
+IX_T6_PED_CLIENTE    ID_CLIENTE                     IX_C23_CLI_FECHA
+IX_T6_PED_ESTADO     ESTADO                         IX_T6_C14_PEND
+== 3 · Uso registrado (DBA_INDEX_USAGE) ==
+
+INDEX_NAME              ACCESOS EJECUCIONES LAST_USED
+-------------------- ---------- ----------- -------------------
+PK_T6_PEDIDO                759         759 2026-11-25 14:18:55
+== 4 · Selectividad de cada columna (1/distintos) ==
+
+COLUMN_NAME      NUM_DISTINCT PCT_POR_VALOR HISTOGRAM
+---------------- ------------ ------------- ---------------
+ID_PEDIDO             1000000         .0001 NONE
+FECHA_PEDIDO           995008         .0001 NONE
+ID_CLIENTE             100816          .001 NONE
+IMPORTE                 49908          .002 NONE
+CODIGO_POSTAL           11000         .0091 NONE
+ESTADO                      4            25 NONE
+CANAL                       3       33.3333 NONE
+   -- Lectura: (1) redundancia: IX_T6_PED_CLIENTE (id_cliente) es el prefijo de IX_C23_CLI_FECHA; (2) el factor de
+   -- agrupamiento dice si un rango por ese índice lee pocos bloques o casi una fila por bloque; (3) el uso registrado
+   -- se vuelca cada ~15 min y no cuenta las consultas de SYS: un índice «sin uso» hoy no prueba nada.
+   -- Si hiciste C14, verás también IX_T6_PED_ESTADO cubierto por IX_T6_C14_PEND: el inventario encuentra lo que nadie recuerda.

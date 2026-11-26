@@ -1,0 +1,95 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET SERVEROUTPUT OFF LINESIZE 170
+SYS@FREE> CREATE INDEX t6.ix_t6_c14_pend ON t6.pedido (estado, canal, fecha_pedido) INVISIBLE ONLINE TABLESPACE tbs_t6;
+
+Index created.
+
+SYS@FREE> SELECT index_name, visibility, status, leaf_blocks FROM dba_indexes WHERE owner = 'T6' AND index_name = 'IX_T6_C14_PEND';
+
+INDEX_NAME           VISIBILIT STATUS     LEAF_BLOCKS
+-------------------- --------- ---------- -----------
+IX_T6_C14_PEND       INVISIBLE VALID             3206
+
+1 row selected.
+
+SYS@FREE> PROMPT == 1 · Invisible: el resto de sesiones (y esta) siguen igual ==
+== 1 · Invisible: el resto de sesiones (y esta) siguen igual ==
+SYS@FREE> EXPLAIN PLAN FOR SELECT COUNT(*), SUM(importe) FROM t6.pedido WHERE estado = 'P' AND canal = 'T' AND fecha_pedido >= DATE '2026-01-01';
+
+Explained.
+
+SYS@FREE> SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY(format => 'BASIC'));
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+Plan hash value: 2571571058
+
+-------------------------------------
+| Id  | Operation          | Name   |
+-------------------------------------
+|   0 | SELECT STATEMENT   |        |
+|   1 |  SORT AGGREGATE    |        |
+|   2 |   TABLE ACCESS FULL| PEDIDO |
+-------------------------------------
+
+9 rows selected.
+
+SYS@FREE> PROMPT == 2 · Solo esta sesión lo ve: lo probamos con la consulta real ==
+== 2 · Solo esta sesión lo ve: lo probamos con la consulta real ==
+SYS@FREE> ALTER SESSION SET optimizer_use_invisible_indexes = TRUE;
+
+Session altered.
+
+SYS@FREE> SET TERMOUT OFF
+SYS@FREE> SELECT * FROM TABLE(DBMS_XPLAN.DISPLAY_CURSOR(format => 'ALLSTATS LAST -NOTE'));
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+SQL_ID  b1sf43g3jknnf, child number 0
+-------------------------------------
+SELECT /*+ GATHER_PLAN_STATISTICS t6_c14_prueba */ COUNT(*),
+SUM(importe) FROM t6.pedido  WHERE estado = 'P' AND canal = 'T' AND
+fecha_pedido >= DATE '2026-01-01'
+
+Plan hash value: 2691093566
+
+--------------------------------------------------------------------------------------------------------------------------
+| Id  | Operation                            | Name           | Starts | E-Rows | A-Rows |   A-Time   | Buffers | Reads  |
+--------------------------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT                     |                |      1 |        |      1 |00:00:00.01 |     116 |     10 |
+|   1 |  SORT AGGREGATE                      |                |      1 |      1 |      1 |00:00:00.01 |     116 |     10 |
+|   2 |   TABLE ACCESS BY INDEX ROWID BATCHED| PEDIDO         |      1 |  24962 |   2056 |00:00:00.01 |     116 |     10 |
+|*  3 |    INDEX RANGE SCAN                  | IX_T6_C14_PEND |      1 |  24962 |   2056 |00:00:00.01 |      10 |     10 |
+--------------------------------------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   3 - access("ESTADO"='P' AND "CANAL"='T' AND "FECHA_PEDIDO">=TIMESTAMP' 2026-01-01 00:00:00')
+
+22 rows selected.
+
+SYS@FREE> ALTER SESSION SET optimizer_use_invisible_indexes = FALSE;
+
+Session altered.
+
+SYS@FREE> PROMPT == 3 · La prueba convence: se publica para todos ==
+== 3 · La prueba convence: se publica para todos ==
+SYS@FREE> ALTER INDEX t6.ix_t6_c14_pend VISIBLE;
+
+Index altered.
+
+SYS@FREE> SET ECHO OFF
+
+PL/SQL procedure successfully completed.
+
+RESULTADO
+--------------------------------------------------------------------------------------------------------------
+Panel con el índice: .35 ms y 118 lecturas lógicas por apertura
+
+1 row selected.
+

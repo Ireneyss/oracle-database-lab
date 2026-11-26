@@ -1,0 +1,51 @@
+
+SYS@FREE> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SYS@FREE> SET LINESIZE 160 SERVEROUTPUT OFF
+SYS@FREE> COLUMN argumento FORMAT A20
+SYS@FREE> COLUMN tipo FORMAT A10
+SYS@FREE> COLUMN procedimiento FORMAT A22
+SYS@FREE> SELECT subprogram_id, package_name || '.' || object_name AS procedimiento, argument_name AS argumento, data_type AS tipo
+  2    FROM dba_arguments WHERE owner = 'T6' AND package_name = 'APP' AND object_name LIKE 'BUSCAR_CP%' ORDER BY 1;
+
+SUBPROGRAM_ID PROCEDIMIENTO          ARGUMENTO            TIPO
+------------- ---------------------- -------------------- ----------
+            5 APP.BUSCAR_CP_V1       P_CP                 NUMBER
+            6 APP.BUSCAR_CP_V2       P_CP                 VARCHAR2
+
+2 rows selected.
+
+SYS@FREE> PROMPT == Prueba de humo de la V2 antes de la carga: 20 búsquedas y su plan ==
+== Prueba de humo de la V2 antes de la carga: 20 búsquedas y su plan ==
+SYS@FREE> SET ECHO OFF
+
+PL/SQL procedure successfully completed.
+
+PLAN_TABLE_OUTPUT
+------------------------------------------------------------------------------------------------------------------------------------------------------
+EXPLAINED SQL STATEMENT:
+------------------------
+SELECT /*+ t6_cp_v2 */ COUNT(*), SUM(IMPORTE) FROM T6.PEDIDO WHERE
+CODIGO_POSTAL = :B1
+
+Plan hash value: 2982358210
+
+-------------------------------------------------------------
+| Id  | Operation                            | Name         |
+-------------------------------------------------------------
+|   0 | SELECT STATEMENT                     |              |
+|   1 |  SORT AGGREGATE                      |              |
+|   2 |   TABLE ACCESS BY INDEX ROWID BATCHED| PEDIDO       |
+|*  3 |    INDEX RANGE SCAN                  | IX_T6_PED_CP |
+-------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   3 - access("CODIGO_POSTAL"=:B1)
+
+21 rows selected.
+
+-- El despliegue: la web llama a buscar_cp_v2(TO_CHAR(:cp)). La fase validar repite LA MISMA carga con la V2.
