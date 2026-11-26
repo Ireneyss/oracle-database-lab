@@ -1,0 +1,13 @@
+== EVIDENCIA alumno=E066 hora=2026-11-26T11:24:47Z origen=t6/C18_provocar
+== EVIDENCIA contenedor=8b68d5c7389b dbid=1509902213 arranque=2026-11-26T08:11:58 scn=7431679
+
+==================== Lunes: el informe de pendientes con el histograma de ESTADO (y AWR guardando lo que pasa) ====================
+LUNES        plan 1767728868  194 lecturas/ejecución  3.6 ms  línea base: (ninguna)
+
+==================== Noche: la tarea de estadísticas recoge PEDIDO con las preferencias de la tabla (SIZE 1: sin histograma) ====================
+Preferencia METHOD_OPT de PEDIDO: FOR ALL COLUMNS SIZE 1
+
+==================== Martes: el mismo informe ====================
+MARTES       plan 2571571058  5227 lecturas/ejecución  24.8 ms  línea base: (ninguna)
+
+-- Hecho. Los de finanzas dicen que «el informe de pendientes tarda más desde hoy». Siguiente fase: caso C18 entender

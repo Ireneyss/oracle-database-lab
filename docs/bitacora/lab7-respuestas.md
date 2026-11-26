@@ -124,11 +124,29 @@ Evidencia: `casos/20261126T105111Z_C14_observar.txt`.
 
 ## Parte F · C17 · INC-604 con AWR, ASH y ADDM
 1. SLI y SLO; p95 antes y después; instantáneas AWR que usaste.
+
+El SLI es la latencia p95 de la búsqueda por código postal medida en la telemetría de la web (T6.APP_LOG), y el SLO acordado es p95 < 20 ms. Con la V1 y 3 sesiones durante 120 s la p95 fue de 82,1 ms, así que incumplía el SLO, y se atendieron 4.078 búsquedas. Con la V2 y la misma carga la p95 bajó a 1,02 ms y se atendieron 31.781 búsquedas. Para comparar usé dos intervalos AWR: el 19 → 20 (11:04 a 11:06) con la V1 y el 23 → 24 (11:18 a 11:20) con la V2. Con los deltas de AWR, las lecturas por ejecución pasaron de 5.125 a 94. La primera validación con la V2 (intervalo 21 → 22) dio dos FALLO porque el cursor desaparecía de la shared pool nada más terminar la carga; tuve que fijar shared_pool_size = 640M y repetirla, y entonces salieron las cinco comprobaciones en OK.
+
+Evidencia: `casos/20261126T110630Z_C17_entender.txt`, `casos/20261126T112010Z_C17_validar.txt`, `casos/20261126T112047Z_C17_observar.txt` y `herramientas/20261126T111759Z_ajuste-shared-pool.txt`.
+
 2. ¿Qué dijeron ASH, AWR y ADDM, y qué no podían decirte? ¿Cuál fue el ÚNICO cambio?
+
+ASH me dijo quién y en qué: la sentencia 0dbx7196jdajy acumulaba 236 muestras ON CPU y 25 de resmgr:cpu quantum. AWR, en el intervalo 19 → 20, la puso arriba con 4.048 ejecuciones, 249,7 s y 5.125 lecturas por ejecución, con el plan 2571571058. ADDM cuantificó el problema: 2,57 sesiones activas de media con 2 CPU, y el hallazgo Top SQL Statements con el 93,55 % de la actividad recomendaba pasar el SQL Tuning Advisor sobre 0dbx7196jdajy. Lo que ninguna de las tres podía decirme es la causa: eso lo dice el plan, que guardado en AWR es un TABLE ACCESS FULL sobre PEDIDO, el mismo de C07 donde la V1 pasa el código postal como NUMBER y Oracle aplica TO_NUMBER sobre la columna. El único cambio fue desplegar la V2, que recibe el parámetro como VARCHAR2 igual que la columna, sin crear índices ni tocar parámetros para arreglar la búsqueda; la nueva sentencia (53mx77snb43uw) usa INDEX RANGE SCAN sobre IX_T6_PED_CP.
+
+Evidencia: `casos/20261126T110634Z_C17_diagnosticar.txt`, `casos/20261126T110732Z_C17_solucionar.txt` y `casos/20261126T112047Z_C17_observar.txt`.
 
 ## Parte F · C18 · SQL Plan Management
 1. PLAN_HASH_VALUE y lecturas del lunes, del martes y con la línea base.
+
+El mismo SQL_ID (8hn59jfgw00y7) tuvo tres comportamientos. El lunes, con histograma en ESTADO, usó el plan 1767728868 (INDEX RANGE SCAN sobre IX_T6_PED_ESTADO) con 194 lecturas por ejecución y 3,6 ms. El martes, después de la recogida nocturna con la preferencia METHOD_OPT = FOR ALL COLUMNS SIZE 1, el histograma desapareció, el optimizador estimó 250.000 pedidos en P y cambió al plan 2571571058 (TABLE ACCESS FULL) con 5.227 lecturas y 24,8 ms. Como AWR guardaba el plan del lunes (instantáneas 25 a 26), lo cargué con DBMS_SPM.LOAD_PLANS_FROM_AWR como línea base aceptada (SQL_PLAN_0a27u7nan424ba00b9863, MANUAL-LOAD-FROM-AWR). Con ella, y sin tocar las estadísticas del martes, el informe volvió al plan 1767728868 con 190 lecturas por ejecución, 27 veces menos.
+
+Evidencia: `casos/20261126T112448Z_C18_entender.txt`, `casos/20261126T112451Z_C18_diagnosticar.txt`, `casos/20261126T112454Z_C18_solucionar.txt` y `casos/20261126T112455Z_C18_validar.txt`.
+
 2. ¿Qué hizo la evolución con el plan nuevo y por qué? ¿Qué queda pendiente para que no vuelva a pasar?
+
+Al tener línea base, el plan que quería el optimizador (el recorrido completo) no se usó: SPM lo guardó como SQL_PLAN_0a27u7nan424b95a18d93, AUTO-CAPTURE y no aceptado. La tarea de evolución ejecutó los dos planes con la cuenta de la aplicación (T6_APP), los comparó y el nuevo no pasó el criterio de beneficio: su rendimiento verificado fue 0,10848 veces el del plan de la línea base, o sea, mucho peor. Por eso siguió sin aceptarse. SPM no se fía de lo que cree el optimizador, solo acepta un plan si demuestra que es mejor. Lo pendiente es la causa: la preferencia METHOD_OPT = FOR ALL COLUMNS SIZE 1 de PEDIDO seguirá borrando el histograma de ESTADO en cada recogida. Hay que cambiar esa preferencia para que recoja el histograma de ESTADO y aplicarlo con el ciclo de C13 (pendientes, probar en una sesión y publicar), y mientras tanto la línea base mantiene el plan bueno.
+
+Evidencia: `casos/20261126T112532Z_C18_observar.txt` y `casos/20261126T112447Z_C18_provocar.txt`.
 
 ## Parte G · Incidente 1 · INC-6NN
 - **Síntoma (con números):**
